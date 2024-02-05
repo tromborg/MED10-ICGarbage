@@ -2,3 +2,5 @@
 ICGarbage/pointrend_resnet50.pkl
 ICGarbage/savedImg
 ICGarbage/yolotxt
+ICGarbage/.idea
+ICGarbage/__pycache__
