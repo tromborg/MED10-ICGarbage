@@ -176,10 +176,8 @@ if __name__ == '__main__':
     check = True
     cap = cv2.VideoCapture('GL010031.mp4')
     ret, frame = cap.read()
-    motion = 0
     leftCnts = []
     rightCnts = []
-    hullList = []
     contourVal = 80
     properties = ['area', 'bbox', 'bbox_area']
     kernel1 = np.ones((5, 5), np.uint8)
@@ -192,30 +190,17 @@ if __name__ == '__main__':
     imNum = 0
     fiftyFrame = []
     minBoundingVal = 0
-    featureImgs = []
-    goodMatchesCounter = 0
-    grayFrameArray = []
-    normalPics = []
-    normalnormalPics = []
-    imgCounter = 0
-    numFeatImgs = 640
-    fakeCloseCoutner = 0
+    fakeCloseCounter = 0
 
     ins = instanceSegmentation()
     ins.load_model("pointrend_resnet50.pkl", confidence=0.2)
     # ---VARIABLES---#
-    while cap.isOpened() and calibrating:
-        previousFrame = frame[:]
-        # cv2.imshow('prev', previousFrame)
+    while cap.isOpened():
         frameCount += 1
         ret, frame = cap.read()
         cv2.imshow('current', frame)
         left, right = getROI(frame)
-        prevLeft, prevRight = getROI(previousFrame)
-        grayLeft = cv2.cvtColor(left, cv2.COLOR_BGR2GRAY)
-        grayRight = cv2.cvtColor(right, cv2.COLOR_BGR2GRAY)
         fiftyFrame.append(frame)
-        grayFrame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
         if frameCount > 150:
             if frameCount > 150 and frameCount < 500:
@@ -243,27 +228,23 @@ if __name__ == '__main__':
                     prevRoiLeft = left[leftYTop1:leftYBottom1 + 1, leftXTop1:leftXBottom1 + 1]
                     prevRoiRight = right[rightYTop1:rightYBottom1 + 1, rightXTop1:rightXBottom1 + 1]
 
+                    cv2.imshow("blobsr", blobsR)
                     print("top coordinates: " + str(leftYTop1) + " " + str(leftXBottom1))
                     print("bottom coordinates: " + str(rightYBottom1) + " " + str(rightXTop1 + (frame.shape[1] / 2)))
                     # label is sklearns function for doing blob analysis of a binary image
-                    
-                    blobs1 = label(blobsR > 0)
 
-                    # Fills out both the grabber images as before this, there is a lot of holes in the image. Do it for both grabbers
-                    closed = fillColor(leftout1)
-                    closed2 = fillColor(rightout1)
                     # Fixes the ROI for the blobsL image, so it is the same size as the ones before, where we also made ROI's
                     blobsRReal = blobsR[rightYTop1:rightYBottom1 + 1, rightXTop1:rightXBottom1 + 1]
                     blobsRAnal = label(blobsRReal > 0)
-
+                    cv2.imshow("bloblsrreal", blobsRReal)
 
 
 
                     dfR = pd.DataFrame(regionprops_table(blobsRAnal, properties=properties))
                     # Area_opening is sklearns function for removing any unwanted blobs. Here we say all blobs under the threshold value of 200 less than the
                     # biggest blob in the image should be removed, so we are only left with the biggest blob which should be the grabber.
-                    f2 = area_opening(blobsRReal, max(dfR['area'] - 1000), 1)
-
+                    f2 = area_opening(blobsRReal, max(dfR['area']), 1)
+                    cv2.imshow("f2", f2)
 
                     # Erode makes the threshold image smaller
                     erodeF2 = cv2.erode(f2, kernel1, iterations=2)
@@ -300,6 +281,7 @@ if __name__ == '__main__':
                 flowThreshRight = cv2.inRange(flowHSVRight, (0, 0, 5), (180, 255, 255))
                 # Blob analysis again to find the biggest blob
                 blobsRight = label(flowThreshRight > 0)
+                cv2.imshow("optical treshold", flowThreshRight)
                 dfRight = pd.DataFrame(regionprops_table(blobsRight, properties=properties))
                 # If the biggest blob is over 400, the grabbers are moving!!
                 if len(dfRight) != 0 and max(dfRight['area']) > 400:
@@ -317,15 +299,15 @@ if __name__ == '__main__':
                         closeCounter = 0
                         closeTimer = 0
                         #print("fake close")
-                        fakeCloseCoutner += 1
+                        fakeCloseCounter += 1
 
-                        print("Fake Close Counter: " + str(fakeCloseCoutner))
+                        print("Fake Close Counter: " + str(fakeCloseCounter))
                     # If it makes 3 or more detection in the last 10 frames from the first detection save as correct detection. Also resets detection variables
                     if closeTimer > 10 and closeCounter > 3 and stillClosedBool == False and len(fiftyFrame) > 495:
                         closing = False
                         closeCounter = 0
                         closeTimer = 0
-                        screenVal = 250 / 2
+
                         print("We closing!")
                         # Save image from 70 frames ago as picture of garbage. Makes ROI of the image, to filter out unnecessary noise.
 
@@ -342,8 +324,6 @@ if __name__ == '__main__':
                                                                imNum) + ".png")
                         # Goes through all the bounding boxes that is found by the NN on the image and chooses the one closest to the grabbers position.
                         for i in range(0, len(results['boxes'])):
-                            middleObject = results['boxes'][i][3] - (
-                                        results['boxes'][i][3] - results['boxes'][i][1]) / 2
                             boxWidth = results['boxes'][i][2] - results['boxes'][i][0]
                             boxHeight = results['boxes'][i][3] - results['boxes'][i][1]
                             boxArea = boxWidth * boxHeight
