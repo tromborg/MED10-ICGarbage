@@ -1,7 +1,7 @@
 
 ICGarbage/pointrend_resnet50.pkl
-ICGarbage/savedImg
-ICGarbage/yolotxt
-ICGarbage/.idea
-ICGarbage/__pycache__
+ICGarbage/savedImg/
+ICGarbage/yolotxt/
+ICGarbage/.idea/
+ICGarbage/__pycache__/
 ICGarbage/.idea/misc.xml
