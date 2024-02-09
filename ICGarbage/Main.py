@@ -8,7 +8,7 @@ import pandas as pd
 from pixellib.torchbackend.instance import instanceSegmentation
 from ultralytics import YOLO
 
-from WasteExtractionYolo import WasteExtractionYolo
+from WasteExtraction import WasteExtraction
 
 
 def getROI(currentFrame):
@@ -56,7 +56,7 @@ if __name__ == '__main__':
     cap = cv2.VideoCapture('mergedPark.mp4')
     ret, frame = cap.read()
     fiftyFrame = []
-    we = WasteExtractionYolo()
+    we = WasteExtraction()
     model = YOLO("best.pt")
     # ---VARIABLES---#
     while cap.isOpened():

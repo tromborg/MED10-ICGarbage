@@ -8,7 +8,7 @@ import pandas as pd
 from pixellib.torchbackend.instance import instanceSegmentation
 
 
-class WasteExtractionYolo:
+class WasteExtraction:
     def __init__(self, contourval=80):
         self.properties = ['area', 'bbox', 'bbox_area']
         self.leftCnts = []
