@@ -1,0 +1,9 @@
+train: ../grapperyolosplit/images/train/
+val:  ../grapperyolosplit/images/validation/
+
+
+# number of classes
+nc: 2
+
+# class names
+names: ["Left", "Right"]
