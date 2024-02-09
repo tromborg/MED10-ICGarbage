@@ -6,8 +6,9 @@ from skimage.morphology import area_closing
 from skimage.measure import label, regionprops_table
 import pandas as pd
 from pixellib.torchbackend.instance import instanceSegmentation
+from ultralytics import YOLO
 
-from WasteExtraction import WasteExtraction
+from WasteExtractionYolo import WasteExtractionYolo
 
 
 def getROI(currentFrame):
@@ -52,12 +53,11 @@ if __name__ == '__main__':
     # ---VARIABLES---#
     frameCount = 0
     check = True
-    cap = cv2.VideoCapture('GL010031.mp4')
+    cap = cv2.VideoCapture('mergedPark.mp4')
     ret, frame = cap.read()
     fiftyFrame = []
-    ins = instanceSegmentation()
-    we = WasteExtraction()
-    ins.load_model("pointrend_resnet50.pkl", confidence=0.2)
+    we = WasteExtractionYolo()
+    model = YOLO("best.pt")
     # ---VARIABLES---#
     while cap.isOpened():
         frameCount += 1
@@ -67,12 +67,13 @@ if __name__ == '__main__':
         fiftyFrame.append(frame)
 
         if frameCount > 150:
+            if frameCount > 200:
+                fiftyFrame.pop(0)
             if frameCount > 150 and frameCount < 500:
                 we.calibrate(frame)
 
             if frameCount > 500:
                 print(frameCount)
-                fiftyFrame.pop(0)
                 # if statement used to make sure the code in the if statement only gets run once.
                 if check:
                     left_bbox, right_bbox, erodeF2, maskedRightPrevGray = we.end_calibration(frame)
@@ -82,7 +83,7 @@ if __name__ == '__main__':
 
                 dfRight, new_prev_gray = we.opticalFlowHSV(right_img=right, right_bbox=right_bbox, erodeF2=erodeF2, maskedRightPrevGray=maskedRightPrevGray)
                 maskedRightPrevGray = new_prev_gray
-                we.closing_event_handler(dfRight=dfRight, fiftyFrame=fiftyFrame, leftBottomX1=leftXBottom1, rightTopX1=rightXTop1, instance_segmenter=ins)
+                we.closing_event_handler(dfRight=dfRight, fiftyFrame=fiftyFrame, leftBottomX1=leftXBottom1, rightTopX1=rightXTop1, model=model)
 
                 # shows some images
                 #cv2.imshow('hsvtreshRight', flowThreshRight)

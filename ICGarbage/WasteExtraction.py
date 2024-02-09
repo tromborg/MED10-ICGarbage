@@ -8,7 +8,7 @@ import pandas as pd
 from pixellib.torchbackend.instance import instanceSegmentation
 
 
-class WasteExtraction:
+class WasteExtractionYolo:
     def __init__(self, contourval=80):
         self.properties = ['area', 'bbox', 'bbox_area']
         self.leftCnts = []
@@ -173,7 +173,7 @@ class WasteExtraction:
         dfR = pd.DataFrame(regionprops_table(blobsRAnal, properties=self.properties))
         # Area_opening is sklearns function for removing any unwanted blobs. Here we say all blobs under the threshold value of 200 less than the
         # biggest blob in the image should be removed, so we are only left with the biggest blob which should be the grabber.
-        f2 = area_opening(blobsRReal, max(dfR['area']), 1)
+        f2 = area_opening(blobsRReal, max(dfR['area']- 1000), 1)
         cv2.imshow("f2", f2)
 
         # Erode makes the threshold image smaller
@@ -205,6 +205,22 @@ class WasteExtraction:
 
         return bgr
 
+    def draw_flow(self, img, flow, step=16):
+        h, w = img.shape[:2]
+        y, x = np.mgrid[step / 2:h:step, step / 2:w:step].reshape(2, -1).astype(int)
+        fx, fy = flow[y, x].T
+
+        lines = np.vstack([x, y, x - fx, y - fy]).T.reshape(-1, 2, 2)
+        lines = np.int32(lines + 0.5)
+
+        img_bgr = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+        cv2.polylines(img_bgr, lines, 0, (0, 255, 0))
+
+        for (x1, y1), (_x2, _y2) in lines:
+            cv2.circle(img_bgr, (x1, y1), 1, (0, 255, 0), -1)
+
+        return img_bgr
+
     def opticalFlowHSV(self, right_img, right_bbox, erodeF2, maskedRightPrevGray):
         # Making ROI's again, this time in the while loop so it keeps updating, and not just doing it onee as once again, we need it for the
         # optical flow function
@@ -217,8 +233,7 @@ class WasteExtraction:
         maskedRightGray = cv2.cvtColor(maskedRight, cv2.COLOR_BGR2GRAY)
 
         # The optical flow function! Uses gray images of the current frame and the frame from just before
-        flow2 = cv2.calcOpticalFlowFarneback(maskedRightPrevGray, maskedRightGray, None, 0.5, 3, 25, 3, 5, 1.2,
-                                             0)
+        flow2 = cv2.calcOpticalFlowFarneback(maskedRightPrevGray, maskedRightGray, None, 0.5, 3, 25, 3, 5, 1.2,0)
         # Sets the previous frame to the current so it is ready for the next frame.
         maskedRightPrevGray = maskedRightGray
 
@@ -230,6 +245,7 @@ class WasteExtraction:
         # Blob analysis again to find the biggest blob
         blobsRight = label(flowThreshRight > 0)
         cv2.imshow("optical treshold", flowThreshRight)
+        cv2.imshow("optical flow", self.draw_flow(maskedRightGray, flow2))
         dfRight = pd.DataFrame(regionprops_table(blobsRight, properties=self.properties))
 
         return dfRight, maskedRightPrevGray
@@ -246,57 +262,39 @@ class WasteExtraction:
             self.movement = False
             self.stillClosedBool = False
 
-    def get_waste_frame(self, fiftyFrame, leftXBottom1, rightXTop1, instance_segmenter):
+    def get_waste_frame(self, fiftyFrame, leftXBottom1, rightXTop1, model):
         print("We closing!")
         # Save image from 70 frames ago as picture of garbage. Makes ROI of the image, to filter out unnecessary noise.
-
-        saveImg = fiftyFrame[500 - 70]
-        saveImgRoi = saveImg[0:saveImg.shape[0],
-                     leftXBottom1:int(rightXTop1 + (saveImg.shape[1] / 2))]
-        resize = cv2.resize(saveImgRoi, (250, 250))
-        # Save the chosen image on the pc.
-        cv2.imwrite("savedImg/garbage" + str(self.imNum) + ".png", resize)
-        # The code line for the neural network segmentation of the image.
-        results, output = instance_segmenter.segmentImage("savedImg/garbage" + str(self.imNum) + ".png",
-                                           show_bboxes=True,
-                                           output_image_name="savedImg/segmented" + str(
-                                               self.imNum) + ".png")
-        # Goes through all the bounding boxes that is found by the NN on the image and chooses the one closest to the grabbers position.
-        for i in range(0, len(results['boxes'])):
-            boxWidth = results['boxes'][i][2] - results['boxes'][i][0]
-            boxHeight = results['boxes'][i][3] - results['boxes'][i][1]
-            boxArea = boxWidth * boxHeight
-            if boxArea > self.minBoundingVal:
-                self.minBoundingVal = boxArea
-                print("val: " + str(self.minBoundingVal))
-                print(self.imNum)
-                bbx1 = results['boxes'][i][0]
-                bby1 = results['boxes'][i][1]
-                bbx2 = results['boxes'][i][2]
-                bby2 = results['boxes'][i][3]
-        # Draws the chosen bounding box on a new image and saves it on the pc.
-        if len(results['boxes']) != 0:
-            centerX = (bbx1 + bbx2) / 2
-            centerY = (bby1 + bby2) / 2
-            width = bbx2 - bbx1
-            height = bby2 - bby1
-            ncenterX = centerX / resize.shape[1]
-            ncenterY = centerY / resize.shape[0]
-            nwidth = width / resize.shape[1]
-            nheight = height / resize.shape[0]
-
-            cv2.rectangle(resize, (bbx1, bby1), (bbx2, bby2), (0, 255, 0), thickness=2)
-            cv2.imwrite("savedImg/bbox" + str(self.imNum) + ".png", resize)
-            f1 = open("yolotxt/" + str(self.imNum) + ".txt", "w+")
-            f1.write(
-                "Class here " + str(ncenterX) + " " + str(ncenterY) + " " + str(nwidth) + " " + str(
-                    nheight))
-            f1.close()
-            # Resets the minBoundingVal variable so it is ready for a new image segmentation. Also sets movement to tru to start the timer.
-            self.minBoundingVal = 1000
+        screenSize = fiftyFrame[0].shape[1] / 3
+        yoloResults = model(fiftyFrame, conf=0.4)
+        frameNumber = 0
+        validResults = []
+        validFrames = []
+        validFramesNumber = 0
+        print("shapeX: " + str(fiftyFrame[0].shape[1]) + "shapeY: " + str(fiftyFrame[0].shape[0]))
+        for result in yoloResults:
+            if len(result.boxes) > 0 and int(result.boxes.xyxy[0][0]) > screenSize and int(result.boxes.xyxy[0][2]) < fiftyFrame[0].shape[1] - screenSize and int(result.boxes.xyxy[0][3]) < fiftyFrame[0].shape[0]-30 and int(result.boxes.xyxy[0][1]) > 80:
+                validResults.append(result)
+                validFrames.append(fiftyFrame[frameNumber])
+            frameNumber += 1
+        if len(validResults) > 0:
+            for i in range(0,len(validResults)):
+                boxWidth = int(validResults[i].boxes.xyxy[0][2]) - int(validResults[i].boxes.xyxy[0][0])
+                boxHeight = int(validResults[i].boxes.xyxy[0][3]) - int(validResults[i].boxes.xyxy[0][1])
+                boxArea = boxWidth * boxHeight
+                if boxArea > self.minBoundingVal:
+                    self.minBoundingVal = boxArea
+                    biggestbox = validResults[i]
+                    finalImage = validFrames[validFramesNumber]
+                validFramesNumber += 1
+                # Resets the minBoundingVal variable so it is ready for a new image segmentation. Also sets movement to tru to start the timer.
+                self.minBoundingVal = 0
+            cv2.rectangle(finalImage, (int(biggestbox.boxes.xyxy[0][0]), int(biggestbox.boxes.xyxy[0][1])),
+                          (int(biggestbox.boxes.xyxy[0][2]), int(biggestbox.boxes.xyxy[0][3])), (0, 255, 0), thickness=2)
+            cv2.imwrite("testImages/test" + str(self.imNum) + ".png", finalImage)
             self.imNum += 1
         self.movement = True
-    def closing_event_handler(self, dfRight, fiftyFrame, leftBottomX1, rightTopX1, instance_segmenter):
+    def closing_event_handler(self, dfRight, fiftyFrame, leftBottomX1, rightTopX1, model):
         # If the biggest blob is over 400, the grabbers are moving!!
         if len(dfRight) != 0 and max(dfRight['area']) > 400:
             self.closing = True
@@ -317,7 +315,7 @@ class WasteExtraction:
 
                 print("Fake Close Counter: " + str(self.fakeCloseCounter))
             # If it makes 3 or more detection in the last 10 frames from the first detection save as correct detection. Also resets detection variables
-            if self.closeTimer > 10 and self.closeCounter > 3 and self.stillClosedBool == False and len(fiftyFrame) > 495:
+            if self.closeTimer > 10 and self.closeCounter > 3 and self.stillClosedBool == False:
                 self.closing = False
                 self.closeCounter = 0
                 self.closeTimer = 0
@@ -325,6 +323,6 @@ class WasteExtraction:
                 print("We closing!")
                 # Save image from 70 frames ago as picture of garbage. Makes ROI of the image, to filter out unnecessary noise.
 
-                self.get_waste_frame(fiftyFrame, leftBottomX1, rightTopX1, instance_segmenter=instance_segmenter)
+                self.get_waste_frame(fiftyFrame, leftBottomX1, rightTopX1,  model=model)
 
         self.is_closing_over()
