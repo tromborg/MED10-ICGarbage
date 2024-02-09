@@ -7,7 +7,7 @@ from skimage.measure import label, regionprops_table
 import pandas as pd
 from pixellib.torchbackend.instance import instanceSegmentation
 from ultralytics import YOLO
-
+from Calibration import Calibration
 from WasteExtraction import WasteExtraction
 
 
@@ -57,7 +57,9 @@ if __name__ == '__main__':
     ret, frame = cap.read()
     fiftyFrame = []
     we = WasteExtraction()
+    ca = Calibration()
     model = YOLO("best.pt")
+    isCalibrating = True
     # ---VARIABLES---#
     while cap.isOpened():
         frameCount += 1
@@ -71,7 +73,7 @@ if __name__ == '__main__':
                 fiftyFrame.pop(0)
             if frameCount > 150 and frameCount < 500:
                 we.calibrate(frame)
-
+                ca.calibrate(frame, frameCount)
             if frameCount > 500:
                 print(frameCount)
                 # if statement used to make sure the code in the if statement only gets run once.
