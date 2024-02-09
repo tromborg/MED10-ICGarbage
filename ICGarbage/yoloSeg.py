@@ -56,9 +56,7 @@ if __name__ == '__main__':
     cap = cv2.VideoCapture('mergedPark.mp4')
     ret, frame = cap.read()
     fiftyFrame = []
-    ins = instanceSegmentation()
     we = WasteExtractionYolo()
-    ins.load_model("pointrend_resnet50.pkl", confidence=0.2)
     model = YOLO("best.pt")
     # ---VARIABLES---#
     while cap.isOpened():
@@ -85,7 +83,7 @@ if __name__ == '__main__':
 
                 dfRight, new_prev_gray = we.opticalFlowHSV(right_img=right, right_bbox=right_bbox, erodeF2=erodeF2, maskedRightPrevGray=maskedRightPrevGray)
                 maskedRightPrevGray = new_prev_gray
-                we.closing_event_handler(dfRight=dfRight, fiftyFrame=fiftyFrame, leftBottomX1=leftXBottom1, rightTopX1=rightXTop1, instance_segmenter=ins, model=model)
+                we.closing_event_handler(dfRight=dfRight, fiftyFrame=fiftyFrame, leftBottomX1=leftXBottom1, rightTopX1=rightXTop1, model=model)
 
                 # shows some images
                 #cv2.imshow('hsvtreshRight', flowThreshRight)
