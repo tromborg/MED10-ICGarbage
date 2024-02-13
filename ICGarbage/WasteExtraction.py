@@ -273,7 +273,7 @@ class WasteExtraction:
         validFramesNumber = 0
         print("shapeX: " + str(fiftyFrame[0].shape[1]) + "shapeY: " + str(fiftyFrame[0].shape[0]))
         for result in yoloResults:
-            if len(result.boxes) > 0 and int(result.boxes.xyxy[0][0]) > screenSize and int(result.boxes.xyxy[0][2]) < fiftyFrame[0].shape[1] - screenSize and int(result.boxes.xyxy[0][3]) < fiftyFrame[0].shape[0]-30 and int(result.boxes.xyxy[0][1]) > 80:
+            if len(result.boxes) > 0 and int(result.boxes.xyxy[0][0]) > screenSize and int(result.boxes.xyxy[0][2]) < fiftyFrame[0].shape[1] - screenSize and int(result.boxes.xyxy[0][3]) < fiftyFrame[0].shape[0]-80 and int(result.boxes.xyxy[0][1]) > 80:
                 validResults.append(result)
                 validFrames.append(fiftyFrame[frameNumber])
             frameNumber += 1
