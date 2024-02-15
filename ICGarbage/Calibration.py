@@ -18,49 +18,50 @@ class Calibration():
     def get_grabber_preds(self, frame, framecount):
         if self.framecount == 0:
             self.framecount = framecount
-        if framecount < self.framecount + 100:
-            preds = self.grabber_model(frame, stream=True)
+        if framecount < self.framecount + 350:
+            preds = self.grabber_model(frame, stream=True, verbose=False)
             iterator = 0
+
             for res in preds:
+                if 0 in res.boxes.cls and 1 in res.boxes.cls:
+                    temp_left = []
+                    temp_right = []
+                    temp_left_conf = []
+                    temp_right_conf = []
+                    temp_left_box = []
+                    temp_right_box = []
+                    for j in range(0, len(res.boxes.conf)):
+                        if res.boxes.cls[j] == 0:
+                            temp_left.append(res.boxes.cls[j])
+                            temp_left_conf.append(res.boxes.conf[j])
+                            temp_left_box.append(res.boxes.xyxy[j])
 
-                temp_left = []
-                temp_right = []
-                temp_left_conf = []
-                temp_right_conf = []
-                temp_left_box = []
-                temp_right_box = []
-                for j in range(0, len(res.boxes.conf)):
-                    if res.boxes.cls[j] == 0:
-                        temp_left.append(res.boxes.cls[j])
-                        temp_left_conf.append(res.boxes.conf[j])
-                        temp_left_box.append(res.boxes.xyxy[j])
-
-                    elif res.boxes.cls[j] == 1:
-                        temp_right.append(res.boxes.cls[j])
-                        temp_right_conf.append(res.boxes.conf[j])
-                        temp_right_box.append(res.boxes.xyxy[j])
+                        elif res.boxes.cls[j] == 1:
+                            temp_right.append(res.boxes.cls[j])
+                            temp_right_conf.append(res.boxes.conf[j])
+                            temp_right_box.append(res.boxes.xyxy[j])
 
 
-                best_left_idx = temp_left_conf.index(max(temp_left_conf))
-                best_right_idx = temp_right_conf.index(max(temp_right_conf))
-                best_left_box = np.array(temp_left_box[best_left_idx])
-                best_right_box = np.array(temp_right_box[best_right_idx])
-                best_left_conf = np.float16(temp_left_conf[best_left_idx])
-                best_right_conf = np.float16(temp_right_conf[best_right_idx])
-                
-                cv2.rectangle(frame, (int(best_left_box[0]), int(best_left_box[1])), (int(best_left_box[2]), int(best_left_box[3])), (0, 255, 0), thickness=2)
-                cv2.putText(frame, f'Left, Conf: {best_left_conf}', (int(best_left_box[0]), int(best_left_box[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12), 1)
-                cv2.rectangle(frame, (int(best_right_box[0]), int(best_right_box[1])), (int(best_right_box[2]), int(best_right_box[3])), (0, 255, 0), thickness=2)
-                cv2.putText(frame, f'Right, Conf{best_right_conf}', (int(best_right_box[0]), int(best_right_box[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12), 1)
-                cv2.imwrite("calibrationImages/img" + str(framecount) + ".png", frame)
+                    best_left_idx = temp_left_conf.index(max(temp_left_conf))
+                    best_right_idx = temp_right_conf.index(max(temp_right_conf))
+                    best_left_box = np.array(temp_left_box[best_left_idx])
+                    best_right_box = np.array(temp_right_box[best_right_idx])
+                    best_left_conf = np.float16(temp_left_conf[best_left_idx])
+                    best_right_conf = np.float16(temp_right_conf[best_right_idx])
 
-                self.left_bboxes.append(best_left_box)
-                self.right_bboxes.append(best_right_box)
-                print("LEFT: ", best_left_box)
-                print("RIGHT: ", best_right_box)
-                iterator += 1
+                    cv2.rectangle(frame, (int(best_left_box[0]), int(best_left_box[1])), (int(best_left_box[2]), int(best_left_box[3])), (0, 255, 0), thickness=2)
+                    cv2.putText(frame, f'Left, Conf: {best_left_conf}', (int(best_left_box[0]), int(best_left_box[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12), 1)
+                    cv2.rectangle(frame, (int(best_right_box[0]), int(best_right_box[1])), (int(best_right_box[2]), int(best_right_box[3])), (0, 255, 0), thickness=2)
+                    cv2.putText(frame, f'Right, Conf{best_right_conf}', (int(best_right_box[0]), int(best_right_box[1]) - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36, 255, 12), 1)
+                    cv2.imwrite("calibrationImages/img" + str(framecount) + ".png", frame)
 
-        if framecount > self.framecount + 100:
+                    self.left_bboxes.append(best_left_box)
+                    self.right_bboxes.append(best_right_box)
+                    print("LEFT: ", best_left_box)
+                    print("RIGHT: ", best_right_box)
+                    iterator += 1
+
+        if framecount > self.framecount + 350:
             self.is_gathering_frames = False
 
     def get_tracking_roi(self, left_box, right_box):
@@ -102,11 +103,12 @@ class Calibration():
 
         return best_left_box, tracking_roi
     def calibrate(self, frame, framecount):
+        print("self framcount: ", self.framecount)
         if self.is_gathering_frames:
             print("Gathering frames...")
             self.get_grabber_preds(frame=frame, framecount=framecount)
-
-        elif not self.is_gathering_frames:
+            return None, None
+        if self.is_gathering_frames == False:
             print("Finishing calibration...")
             left_bbox, tracking_roi = self.end_calibration()
             region = frame[tracking_roi[1]:tracking_roi[3], tracking_roi[0]:tracking_roi[2]]
