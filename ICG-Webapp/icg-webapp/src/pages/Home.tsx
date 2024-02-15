@@ -19,20 +19,30 @@ const Home: FunctionComponent = () => {
             return;
         }
 
-        try {
+        const chunkSize = 1024 * 1024;
+        const fileSize = selectedFile.size;
+        let start = 0;
+
+        while (start < fileSize) {
+            const chunk = selectedFile.slice(start, start + chunkSize);
             const formData = new FormData();
-            formData.append('video', selectedFile, selectedFile.name);
+            formData.append('video', chunk, selectedFile.name);
 
-            const response = await axios.post('https://localhost:5000/uploadvid', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
+            try {
+                await axios.post('http://localhost:5000/uploadvid', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
+                });
+            } catch (error) {
+                console.error('Error uploading video:', error);
+                return;
+            }
 
-            console.log('Upload successful:', response.data);
-        } catch (error) {
-            console.error('Error uploading video:', error);
+            start += chunkSize;
         }
+
+        console.log('Upload completed');
     };
 
     return (
