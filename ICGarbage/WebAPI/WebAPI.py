@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os
 import urllib3
+from Main import icg_analysis
 
 app = Flask(__name__)
 CORS(app)
@@ -42,6 +43,7 @@ def upload_file():
         final_filename = os.path.join(UPLOAD_FOLDER, filename)
         os.rename(os.path.join(UPLOAD_FOLDER, filename), final_filename)
         upload_done = True
+        start_icg_analysis(final_filename)
         return jsonify({'message': 'File uploaded successfully',
                         'filename': final_filename, 'chunk_num': chunk_num,
                         'total_chunks': total_chunks, 'upload_done': upload_done}), 200
@@ -49,6 +51,11 @@ def upload_file():
 
     return jsonify({'chunk_num': chunk_num, 'total_chunks': total_chunks, 'upload_done': upload_done}), 200
 
+
+def start_icg_analysis(filename):
+    path = filename
+    print('Starting ICG analysis for: ', path)
+    icg_analysis(path)
 
 if __name__ == '__main__':
     app.run(debug=True)
