@@ -10,7 +10,7 @@ class Tracking():
         self.timer = 0
         self.grabbersClosing = False
         self.getFrame = False
-        self.downtime = 6 * fps
+        self.downtime = 7 * fps
 
     def grabbersClosedChecker(self):
         if self.closed == True:

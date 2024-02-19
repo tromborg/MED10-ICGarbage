@@ -32,7 +32,7 @@ class WasteExtraction:
         print("We closing!")
         # Save image from 70 frames ago as picture of garbage. Makes ROI of the image, to filter out unnecessary noise.
         screenSize = fiftyFrame[0].shape[1] / 3
-        yoloResults = model(fiftyFrame[:-20], conf=0.4)
+        yoloResults = model(fiftyFrame[:-40], conf=0.4)
         frameNumber = 0
         validResults = []
         validFrames = []
