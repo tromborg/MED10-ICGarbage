@@ -22,12 +22,13 @@ const Home: FunctionComponent = () => {
         const chunkSize = 1024 * 1024;
         const fileSize = selectedFile.size;
         let start = 0;
-
+        console.log("TotalChunks: " + Math.ceil(fileSize/chunkSize));
+        let TotalChunks = Math.ceil(fileSize/chunkSize) + 1;
         while (start < fileSize) {
             const chunk = selectedFile.slice(start, start + chunkSize);
             const formData = new FormData();
-            formData.append('video', chunk, selectedFile.name);
-
+            formData.append('videochunk', chunk, selectedFile.name);
+            
             try {
                 await axios.post('http://localhost:5000/uploadvid', formData, {
                     headers: {
