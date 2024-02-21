@@ -1,9 +1,11 @@
 from celery import Celery, Task
 from flask import Flask
+from flask_cors import CORS
 import settings
 
 def create_app() -> Flask:
     app = Flask(__name__)
+    CORS(app)
     app.config.from_mapping(
         CELERY=dict(
             broker=f"{settings.RABBITMQ_CONNECTIONSTRING}",
@@ -24,10 +26,10 @@ def celery_init_app(app: Flask) -> Celery:
                 return self.run(*args, **kwargs)
 
     celery_app = Celery(app.name,
-        broker=f"{settings.RABBITMQ_CONNECTIONSTRING}",
-        backend=f"{settings.REDIS_CONNECTIONSTRING}",
-        include=[f'{app.name}.tasks'],
-    )
+                        broker=f"{settings.RABBITMQ_CONNECTIONSTRING}",
+                        backend=f"{settings.REDIS_CONNECTIONSTRING}",
+                        include=[f'{app.name}.tasks'],
+                        )
     celery_app.conf.CELERY_IGNORE_RESULT = False
     celery_app.conf.CELERY_TASK_RESULT_EXPIRES = 1800
     celery_app.conf.CELERY_RESULT_PERSISTENT = True

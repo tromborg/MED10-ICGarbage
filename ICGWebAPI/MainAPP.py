@@ -1,19 +1,39 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+import functools
 import os
-import urllib3
-from Main import icg_analysis
+import settings
+from src.task_app import tasks
+from src.task_app import create_app
+import flask
+from flask import request, jsonify
 
-app = Flask(__name__)
-CORS(app)
+flask_app = create_app()
+celery_app = flask_app.extensions["celery"]
+
+def validate_key(f):
+    @functools.wraps(f)
+    def wrap(*args, **kwargs):
+        KEY = settings.APIKEY
+
+        if not request.headers['APIKey']:
+            print("API KEY MISSING")
+            return flask.abort(400)
+
+        header = request.headers['APIKey']
+        if KEY == header:
+            return f(*args, **kwargs)
+
+        if KEY != header:
+            print("API KEY WRONG")
+            return flask.abort(400)
+
+    return wrap
+@flask_app.get('/')
+def test() -> dict[str, object]:
+    result = tasks.temp.delay()
+    return {"result_id": result.id}
 
 
-@app.route("/")
-def hello_world():
-    return "<p>Hello, World!</p>"
-
-
-@app.route('/uploadvid', methods=['POST'])
+@flask_app.post('/uploadvid')
 def upload_file():
     upload_done = False
     UPLOAD_FOLDER = 'uploads'
@@ -39,14 +59,15 @@ def upload_file():
         f.write(chunk)
 
     # If all chunks are received, finalize the file
-    if chunk_num == total_chunks - 1:
+    if chunk_num == total_chunks:
         final_filename = os.path.join(UPLOAD_FOLDER, filename)
         os.rename(os.path.join(UPLOAD_FOLDER, filename), final_filename)
+        print("Renamed file: ", final_filename)
         upload_done = True
-        start_icg_analysis(final_filename)
+        response = tasks.video_analysis.delay(final_filename)
         return jsonify({'message': 'File uploaded successfully',
                         'filename': final_filename, 'chunk_num': chunk_num,
-                        'total_chunks': total_chunks, 'upload_done': upload_done}), 200
+                        'total_chunks': total_chunks, 'upload_done': upload_done, "task_id": response.id}), 200
 
 
     return jsonify({'chunk_num': chunk_num, 'total_chunks': total_chunks, 'upload_done': upload_done}), 200
@@ -55,7 +76,7 @@ def upload_file():
 def start_icg_analysis(filename):
     path = filename
     print('Starting ICG analysis for: ', path)
-    icg_analysis(path)
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    flask_app.run(debug=False)

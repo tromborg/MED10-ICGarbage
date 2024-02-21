@@ -10,6 +10,7 @@ const Home: FunctionComponent = () => {
     const [totalChunkNum, setTotalChunkNum] = useState(0);
     const [loadingValue, setLoadingValue] = useState(0);
 
+
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
             setSelectedFile(event.target.files[0]);
@@ -37,7 +38,8 @@ const Home: FunctionComponent = () => {
             try {
                 let res = await axios.post('http://localhost:5000/uploadvid', formData, {
                     headers: {
-                        'Content-Type': 'multipart/form-data'
+                        'Content-Type': 'multipart/form-data',
+                        'Access-Control-Allow-Origin': '*'
                     },
                 });
                 if (res.status === 200){
