@@ -121,3 +121,4 @@ ICGarbage/.idea/misc.xml
 ICGarbage/WebAPI/local_settings.py
 ICGarbage/.idea/misc.xml
 ICGarbage/.idea/ICGarbage.iml
+ICGarbage/ICGWebAPI/__pycache__/
