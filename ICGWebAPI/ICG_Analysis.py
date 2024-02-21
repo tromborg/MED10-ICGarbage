@@ -17,7 +17,7 @@ class ICGAnalysis:
 
         return leftRegionIMG, rightRegionIMG
 
-    def perform_icg_analysis(self, videopath):
+    def perform_icg_analysis(self, videopath, filename):
         print("Starting ICG analysis...")
         frameCount = 0
         check = True
@@ -57,7 +57,7 @@ class ICGAnalysis:
                     getFrame = tracking.trackGrabber(leftRegion, leftbbox[2])
                     if getFrame:
                         print("Waste pickup detected, finding optimal frame...")
-                        we.get_waste_frame(fiftyFrame, model=model, leftbbox=leftbbox, rightbbox=rightbbox)
+                        we.get_waste_frame(fiftyFrame, model=model, leftbbox=leftbbox, rightbbox=rightbbox, filename=filename)
                         print("Waste frame saved.")
 
                     # shows some images

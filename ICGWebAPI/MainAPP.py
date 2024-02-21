@@ -61,9 +61,10 @@ def upload_file():
     if chunk_num == total_chunks:
         final_filename = os.path.join(UPLOAD_FOLDER, filename)
         os.rename(os.path.join(UPLOAD_FOLDER, filename), final_filename)
+        filename = filename.split('.')[0]
         print("Renamed file: ", final_filename)
         upload_done = True
-        response = tasks.video_analysis.delay(final_filename)
+        response = tasks.video_analysis.delay(final_filename, filename)
         return jsonify({'message': 'File uploaded successfully',
                         'filename': final_filename, 'chunk_num': chunk_num,
                         'total_chunks': total_chunks, 'upload_done': upload_done, "task_id": response.id}), 200

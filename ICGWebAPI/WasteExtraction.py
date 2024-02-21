@@ -29,7 +29,7 @@ class WasteExtraction:
         return leftRegionIMG, rightRegionIMG
 
 
-    def get_waste_frame(self, fiftyFrame, model, leftbbox, rightbbox):
+    def get_waste_frame(self, fiftyFrame, model, leftbbox, rightbbox, filename):
         print("We closing!")
         # Save image from 70 frames ago as picture of garbage. Makes ROI of the image, to filter out unnecessary noise.
         screenSize = fiftyFrame[0].shape[1] / 3
@@ -77,6 +77,6 @@ class WasteExtraction:
             if finalImage is not None:
                 cv2.rectangle(finalImage, (int(biggestbox.boxes.xyxy[0][0]), int(biggestbox.boxes.xyxy[0][1])),
                               (int(biggestbox.boxes.xyxy[0][2]), int(biggestbox.boxes.xyxy[0][3])), (0, 255, 0), thickness=2)
-                cv2.imwrite("testImages/test" + str(self.imNum) + ".png", finalImage)
+                cv2.imwrite(f"testImages/{filename}" + str(self.imNum) + ".png", finalImage)
                 self.imNum += 1
         self.movement = True
