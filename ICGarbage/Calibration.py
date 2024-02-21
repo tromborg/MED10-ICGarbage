@@ -101,7 +101,7 @@ class Calibration():
         tracking_roi = self.get_tracking_roi(left_box=best_left_box, right_box=best_right_box)
         print("tracking_roi: ", tracking_roi)
 
-        return best_left_box, tracking_roi
+        return best_left_box, best_right_box, tracking_roi
     def calibrate(self, frame, framecount):
         print("self framcount: ", self.framecount)
         if self.is_gathering_frames:
@@ -110,10 +110,10 @@ class Calibration():
             return None, None
         if self.is_gathering_frames == False:
             print("Finishing calibration...")
-            left_bbox, tracking_roi = self.end_calibration()
+            left_bbox, right_bbox, tracking_roi = self.end_calibration()
             region = frame[tracking_roi[1]:tracking_roi[3], tracking_roi[0]:tracking_roi[2]]
             cv2.imshow("roi", region)
-            return left_bbox, region
+            return left_bbox, right_bbox, region
 
 
 

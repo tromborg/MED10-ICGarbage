@@ -51,15 +51,17 @@ if __name__ == '__main__':
                 print(frameCount)
                 # if statement used to make sure the code in the if statement only gets run once.
                 if check:
-                    leftbbox, region = ca.end_calibration()
+                    leftbbox, rightbbox, region = ca.end_calibration()
                     check = False
+                    print("leftbbox: ", leftbbox)
+                    print("rightbbox: ", rightbbox)
                 leftRegion = frame[region[1]:region[3], region[0]:region[2]]
                 cv2.imshow("region", leftRegion)
                 # cv2.rectangle(frame, (int(leftbbox[0]), int(leftbbox[1])),(int(leftbbox[2]),int(leftbbox[3])),(0,255,0), thickness=2)
                 # cv2.imshow("grabber", frame)
                 getFrame = tracking.trackGrabber(leftRegion, leftbbox[2])
                 if getFrame:
-                    we.get_waste_frame(fiftyFrame,model=model)
+                    we.get_waste_frame(fiftyFrame,model=model,leftbbox=leftbbox, rightbbox=rightbbox)
 
                 # shows some images
                 #cv2.imshow('hsvtreshRight', flowThreshRight)
