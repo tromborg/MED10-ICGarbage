@@ -32,7 +32,6 @@ def test() -> dict[str, object]:
     result = tasks.temp.delay()
     return {"result_id": result.id}
 
-
 @flask_app.post('/uploadvid')
 def upload_file():
     upload_done = False

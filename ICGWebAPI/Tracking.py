@@ -21,14 +21,14 @@ class Tracking():
             self.timer = 0
     def closingEvent(self):
         if self.closeCounter > 3 and self.closeTimer > 10 and self.closed == False:
-            print("closing?")
+            #print("closing?")
             self.getFrame = True
             self.closeCounter = 0
             self.closeTimer = 0
             self.closed = True
             return True
         if self.closeCounter <= 3 and self.closeTimer > 10 and self.closed == False:
-            print("not closing")
+            #print("not closing")
             self.closeCounter = 0
             self.closeTimer = 0
             return False
@@ -43,7 +43,7 @@ class Tracking():
         if x2 > startX + 30 and self.closed == False:
             self.grabbersClosing = True
             self.closeCounter += 1
-            print("clsocunter: ", self.closeCounter)
+            #print("clsocunter: ", self.closeCounter)
         if self.grabbersClosing:
             self.closeTimer += 1
             self.closingEvent()

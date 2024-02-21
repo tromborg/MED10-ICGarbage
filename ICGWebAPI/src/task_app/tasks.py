@@ -32,6 +32,7 @@ def video_analysis(self, filepath):
         icg = load_icg_instance()
         task_id = self.request.id
         print(filepath)
+        icg.perform_icg_analysis(filepath)
         response = {'response': "resss"}
         json_res = json.dumps(response)
         print("[+] request handled for task: ", task_id)
