@@ -1,0 +1,2 @@
+flask --app WebAPI run --debug
+celery -A WebAPI worker --loglevel=info --pool=solo
