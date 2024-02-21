@@ -122,3 +122,15 @@ ICGarbage/WebAPI/local_settings.py
 ICGarbage/.idea/misc.xml
 ICGarbage/.idea/ICGarbage.iml
 ICGarbage/ICGWebAPI/__pycache__/
+ICGWebAPI/local_settings.py
+ICGarbage/.idea/ICGarbage.iml
+ICGarbage/.idea/misc.xml
+ICGWebAPI/.idea/ICGWebAPI.iml
+ICGWebAPI/.idea/inspectionProfiles/profiles_settings.xml
+ICGWebAPI/.idea/inspectionProfiles/Project_Default.xml
+ICGWebAPI/.idea/misc.xml
+ICGWebAPI/.idea/modules.xml
+ICGWebAPI/.idea/vcs.xml
+ICGarbage/.idea/misc.xml
+ICGarbage/.idea/ICGarbage.iml
+*.pyc
