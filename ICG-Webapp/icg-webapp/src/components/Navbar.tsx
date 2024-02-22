@@ -28,6 +28,12 @@ const Navbar = () => {
                 <NavLink to={urls.about}>
                     <Box sx={NavButtonStyle}> About </Box>
                 </NavLink>
+                <NavLink to={urls.users}>
+                    <Box sx={NavButtonStyle}> Users </Box>
+                </NavLink>
+                <NavLink to={urls.login}>
+                    <Box sx={NavButtonStyle}>Login</Box>
+                </NavLink>
             </HStack>
         </Flex>
        
