@@ -29,6 +29,7 @@ class ICGAnalysis:
         ca = Calibration(self.grabber_model)
         tracking = Tracking(fps=fps)
         model = self.segmentation_model
+        grabberXArray = []
         print("Variables set, starting video analysis...")
         while cap.isOpened():
             frameCount += 1
@@ -54,10 +55,14 @@ class ICGAnalysis:
                     # cv2.rectangle(frame, (int(leftbbox[0]), int(leftbbox[1])),(int(leftbbox[2]),int(leftbbox[3])),(0,255,0), thickness=2)
                     # cv2.imshow("grabber", frame)
 
-                    getFrame = tracking.trackGrabber(leftRegion, leftbbox[2])
+                    grabberX, getFrame = tracking.trackGrabber(leftRegion, leftbbox[2])
+                    grabberXArray.append(grabberX)
+                    if len(grabberXArray) > (fps * 7):
+                        grabberXArray.pop(0)
                     if getFrame:
                         print("Waste pickup detected, finding optimal frame...")
-                        we.get_waste_frame(fiftyFrame, model=model, leftbbox=leftbbox, rightbbox=rightbbox, filename=filename)
+                        we.get_waste_frame(fiftyFrame, model=model, leftbbox=leftbbox, rightbbox=rightbbox,
+                                           grabberXArray=grabberXArray, grabberStartX=leftbbox[2])
                         print("Waste frame saved.")
 
                     # shows some images
