@@ -48,5 +48,5 @@ class Tracking():
             self.closeTimer += 1
             self.closingEvent()
         self.grabbersClosedChecker()
-        return self.getFrame
+        return x2, self.getFrame
 

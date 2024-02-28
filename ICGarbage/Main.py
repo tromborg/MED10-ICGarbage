@@ -1,11 +1,4 @@
 import cv2
-import numpy as np
-from collections import Counter
-from skimage.morphology import area_opening
-from skimage.morphology import area_closing
-from skimage.measure import label, regionprops_table
-import pandas as pd
-from pixellib.torchbackend.instance import instanceSegmentation
 from ultralytics import YOLO
 from Calibration import Calibration
 from WasteExtraction import WasteExtraction
@@ -81,6 +74,7 @@ if __name__ == '__main__':
     ca = Calibration()
     tracking = Tracking(fps=fps)
     model = YOLO("best.pt")
+    grabberXArray = []
     # ---VARIABLES---#
     while cap.isOpened():
         frameCount += 1
@@ -106,9 +100,12 @@ if __name__ == '__main__':
                 cv2.imshow("region", leftRegion)
                 # cv2.rectangle(frame, (int(leftbbox[0]), int(leftbbox[1])),(int(leftbbox[2]),int(leftbbox[3])),(0,255,0), thickness=2)
                 # cv2.imshow("grabber", frame)
-                getFrame = tracking.trackGrabber(leftRegion, leftbbox[2])
+                grabberX, getFrame = tracking.trackGrabber(leftRegion, leftbbox[2])
+                grabberXArray.append(grabberX)
+                if len(grabberXArray) > (fps * 7):
+                    grabberXArray.pop(0)
                 if getFrame:
-                    we.get_waste_frame(fiftyFrame,model=model,leftbbox=leftbbox, rightbbox=rightbbox)
+                    we.get_waste_frame(fiftyFrame,model=model,leftbbox=leftbbox, rightbbox=rightbbox, grabberXArray=grabberXArray, grabberStartX=leftbbox[2])
 
                 # shows some images
                 #cv2.imshow('hsvtreshRight', flowThreshRight)
