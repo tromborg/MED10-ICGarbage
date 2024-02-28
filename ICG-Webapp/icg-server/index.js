@@ -10,7 +10,7 @@ app.listen(3010, () => {
       console.log(`server listening on port ${PORT}`);
 }) 
 
-app.get('/registeruser', async (req, res) => {
+app.get('/api/registeruser', async (req, res) => {
     await dbManager.createUser(req.body.username, req.body.email, req.body.password);
     res.send('New user registered');
 });

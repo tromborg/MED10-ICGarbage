@@ -61,7 +61,7 @@ class ICGAnalysis:
                         grabberXArray.pop(0)
                     if getFrame:
                         print("Waste pickup detected, finding optimal frame...")
-                        we.get_waste_frame(fiftyFrame, model=model, leftbbox=leftbbox, rightbbox=rightbbox,
+                        we.get_waste_frame(fiftyFrame, filename=filename, model=model, leftbbox=leftbbox, rightbbox=rightbbox,
                                            grabberXArray=grabberXArray, grabberStartX=leftbbox[2])
                         print("Waste frame saved.")
 

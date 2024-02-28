@@ -1,4 +1,5 @@
 import { FunctionComponent, useState } from "react";
+import { useForm } from "react-hook-form";
 import {
   Flex,
   Heading,
@@ -20,12 +21,33 @@ import { FaUserAlt, FaLock } from "react-icons/fa";
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
 
+interface IUserForm {
+  username: string;
+  email: string;
+  password: string;
+  points: number;
+}
+
 const SignupPage : FunctionComponent= () => {
   const [showPassword, setShowPassword] = useState(false);
-
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm<IUserForm>()
   const handleShowClick = () => setShowPassword(!showPassword);
-  const handleSignup = () => {
-    
+  const handleSignup = (data: IUserForm) => {
+    console.log("USERDATA: " + data);
+  }
+
+  function onSubmit(values: IUserForm) {
+    console.log("vals: " + values.email + ", " + values.username + ", " + values.password + ", " + values.points);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        alert(JSON.stringify(values.email, null, 2))
+        Promise.resolve(resolve);
+      }, 3000)
+    })
   }
 
   return (
@@ -46,7 +68,7 @@ const SignupPage : FunctionComponent= () => {
         <Avatar bg="teal.500" />
         <Heading color="teal.400">Sign up</Heading>
         <Box minW={{ base: "90%", md: "468px" }}>
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <Stack
               spacing={4}
               p="1rem"
@@ -59,7 +81,14 @@ const SignupPage : FunctionComponent= () => {
                             pointerEvents="none"
                             children={<CFaUserAlt color="gray.300" />}
                         />
-                        <Input type="username" placeholder="username" />
+                        <Input 
+                          type="username" 
+                          placeholder="username"
+                          {...register('username', {
+                            required: 'This is required',
+                            minLength: { value: 4, message: 'Minimum length should be 4' },
+                          })}
+                          />
                     </InputGroup>
                 </FormControl>
                 <FormControl>
@@ -68,7 +97,14 @@ const SignupPage : FunctionComponent= () => {
                             pointerEvents="none"
                             children={<CFaUserAlt color="gray.300" />}
                         />
-                        <Input type="email" placeholder="email address" />
+                        <Input 
+                          type="email" 
+                          placeholder="email address"
+                          {...register('email', {
+                            required: 'This is required',
+                            minLength: { value: 4, message: 'Minimum length should be 4' },
+                          })}
+                          />
                     </InputGroup>
                 </FormControl>
                 <FormControl>
@@ -81,6 +117,10 @@ const SignupPage : FunctionComponent= () => {
                         <Input
                             type={showPassword ? "text" : "password"}
                             placeholder="Password"
+                            {...register('password', {
+                              required: 'This is required',
+                              minLength: { value: 4, message: 'Minimum length should be 4' },
+                            })}
                         />
                         <InputRightElement width="4.5rem">
                             <Button h="1.75rem" size="sm" onClick={handleShowClick}>
@@ -95,7 +135,7 @@ const SignupPage : FunctionComponent= () => {
                     variant="solid"
                     colorScheme="teal"
                     width="full"
-                    onClick={handleSignup}
+                    isLoading={isSubmitting}
                 >
                     Sign up
                 </Button>
