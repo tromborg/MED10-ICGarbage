@@ -137,3 +137,4 @@ ICGarbage/.idea/ICGarbage.iml
 ICGarbage/ICGWebAPI/calibrationImages/
 ICGarbage/ICGWebAPI/testImages/
 ICG-Webapp/icg-server/settings.js
+ICG-Webapp/icg-webapp/.env
