@@ -134,3 +134,6 @@ ICGWebAPI/.idea/vcs.xml
 ICGarbage/.idea/misc.xml
 ICGarbage/.idea/ICGarbage.iml
 *.pyc
+ICGarbage/ICGWebAPI/calibrationImages/
+ICGarbage/ICGWebAPI/testImages/
+ICG-Webapp/icg-server/settings.js

@@ -6,8 +6,8 @@ from Tracking import Tracking
 
 class ICGAnalysis:
     def __init__(self):
-        self.grabber_model = YOLO("grappermodel.pt")
-        self.segmentation_model = YOLO("best.pt")
+        self.grabber_model = YOLO("grappermodel.pt", verbose=False)
+        self.segmentation_model = YOLO("best.pt", verbose=False)
 
     def getROI(self, currentFrame):
         leftRegionIMG = currentFrame[int(currentFrame.shape[0] / 2):currentFrame.shape[0],
@@ -17,7 +17,8 @@ class ICGAnalysis:
 
         return leftRegionIMG, rightRegionIMG
 
-    def perform_icg_analysis(self, videopath):
+    def perform_icg_analysis(self, videopath, filename):
+        print("Starting ICG analysis...")
         frameCount = 0
         check = True
         cap = cv2.VideoCapture(videopath)
@@ -28,6 +29,7 @@ class ICGAnalysis:
         ca = Calibration(self.grabber_model)
         tracking = Tracking(fps=fps)
         model = self.segmentation_model
+        print("Variables set, starting video analysis...")
         while cap.isOpened():
             frameCount += 1
             ret, frame = cap.read()
@@ -40,18 +42,23 @@ class ICGAnalysis:
                 if frameCount > 150 and frameCount < 503:
                     ca.get_grabber_preds(frame, frameCount)
                 if frameCount > 503:
-                    print(frameCount)
+                    #print(frameCount)
                     # if statement used to make sure the code in the if statement only gets run once.
                     if check:
-                        leftbbox, region = ca.end_calibration()
+                        leftbbox, rightbbox, region = ca.end_calibration()
+                        print("Calibration finished.")
+                        print("Starting tracking...")
                         check = False
                     leftRegion = frame[region[1]:region[3], region[0]:region[2]]
                     # cv2.imshow("region", leftRegion)
                     # cv2.rectangle(frame, (int(leftbbox[0]), int(leftbbox[1])),(int(leftbbox[2]),int(leftbbox[3])),(0,255,0), thickness=2)
                     # cv2.imshow("grabber", frame)
+
                     getFrame = tracking.trackGrabber(leftRegion, leftbbox[2])
                     if getFrame:
-                        we.get_waste_frame(fiftyFrame, model=model)
+                        print("Waste pickup detected, finding optimal frame...")
+                        we.get_waste_frame(fiftyFrame, model=model, leftbbox=leftbbox, rightbbox=rightbbox, filename=filename)
+                        print("Waste frame saved.")
 
                     # shows some images
                     # cv2.imshow('hsvtreshRight', flowThreshRight)
@@ -59,6 +66,6 @@ class ICGAnalysis:
 
             if cv2.waitKey(1) == ord('s'):
                 break
-
+        print("ICG analysis complete.")
         cap.release()
         cv2.destroyAllWindows()

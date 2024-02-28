@@ -17,6 +17,7 @@ class WasteExtraction:
         self.movement = False
         self.imNum = 0
         self.minBoundingVal = 0
+        self.minBlurVal = 0
 
 
     def getROI(self, currentFrame):
@@ -28,35 +29,54 @@ class WasteExtraction:
         return leftRegionIMG, rightRegionIMG
 
 
-    def get_waste_frame(self, fiftyFrame, model):
+    def get_waste_frame(self, fiftyFrame, model, leftbbox, rightbbox, filename):
         print("We closing!")
         # Save image from 70 frames ago as picture of garbage. Makes ROI of the image, to filter out unnecessary noise.
         screenSize = fiftyFrame[0].shape[1] / 3
-        yoloResults = model(fiftyFrame[:-40], conf=0.4)
+        imageArray = fiftyFrame[:-40]
+        yoloResults = model(imageArray, conf=0.4)
         frameNumber = 0
         validResults = []
         validFrames = []
         validFramesNumber = 0
+        validPairs = []
+        index = 0
+        resultsArray = []
+        finalImage = None
         for result in yoloResults:
+            index += 1
             if len(result.boxes) > 0 and int(result.boxes.xyxy[0][0]) > screenSize and int(result.boxes.xyxy[0][2]) < fiftyFrame[0].shape[1] - screenSize and int(result.boxes.xyxy[0][3]) < fiftyFrame[0].shape[0]-80 and int(result.boxes.xyxy[0][1]) > 80:
+                resultsPair = (result, fiftyFrame[frameNumber])
+                validPairs.append(resultsPair)
                 validResults.append(result)
                 validFrames.append(fiftyFrame[frameNumber])
             frameNumber += 1
         if len(validResults) > 0:
             for i in range(0,len(validResults)):
-                boxWidth = int(validResults[i].boxes.xyxy[0][2]) - int(validResults[i].boxes.xyxy[0][0])
-                boxHeight = int(validResults[i].boxes.xyxy[0][3]) - int(validResults[i].boxes.xyxy[0][1])
+                boxWidth = int(validPairs[i][0].boxes.xyxy[0][2]) - int(validPairs[i][0].boxes.xyxy[0][0])
+                boxHeight = int(validPairs[i][0].boxes.xyxy[0][3]) - int(validPairs[i][0].boxes.xyxy[0][1])
                 boxArea = boxWidth * boxHeight
+                allResults = (validPairs[i][0], validPairs[i][1], boxArea)
+                resultsArray.append(allResults)
                 if boxArea > self.minBoundingVal:
                     self.minBoundingVal = boxArea
-                    biggestbox = validResults[i]
-                    finalImage = validFrames[validFramesNumber]
+                    biggestboxes = validResults[i]
+                    finalImages = validFrames[validFramesNumber]
                 validFramesNumber += 1
                 # Resets the minBoundingVal variable so it is ready for a new image segmentation. Also sets movement to tru to start the timer.
-                self.minBoundingVal = 0
-            cv2.rectangle(finalImage, (int(biggestbox.boxes.xyxy[0][0]), int(biggestbox.boxes.xyxy[0][1])),
-                          (int(biggestbox.boxes.xyxy[0][2]), int(biggestbox.boxes.xyxy[0][3])), (0, 255, 0), thickness=2)
-            cv2.imwrite("testImages/test" + str(self.imNum) + ".png", finalImage)
-            self.imNum += 1
+            self.minBoundingVal = 0
+            sorted_results = sorted(resultsArray, key=lambda x: x[2], reverse=True)
+            top10 = sorted_results[:50]
+            for i in range(0,len(top10)):
+                variance_laplacian = cv2.Laplacian(top10[i][1], cv2.CV_64F).var()
+                if variance_laplacian > self.minBlurVal:
+                    self.minBlurVal = variance_laplacian
+                    biggestbox = top10[i][0]
+                    finalImage = top10[i][1]
+            self.minBlurVal = 0
+            if finalImage is not None:
+                cv2.rectangle(finalImage, (int(biggestbox.boxes.xyxy[0][0]), int(biggestbox.boxes.xyxy[0][1])),
+                              (int(biggestbox.boxes.xyxy[0][2]), int(biggestbox.boxes.xyxy[0][3])), (0, 255, 0), thickness=2)
+                cv2.imwrite(f"testImages/{filename}" + str(self.imNum) + ".png", finalImage)
+                self.imNum += 1
         self.movement = True
-

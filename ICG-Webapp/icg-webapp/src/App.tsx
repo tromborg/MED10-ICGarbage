@@ -2,7 +2,10 @@ import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import About from "./pages/About";
+import Users from './pages/Users';
 import RootLayout from "./layouts/RootLayout";
+import LoginPage from './components/UserComponents/LoginPage';
+import SignupPage from './components/UserComponents/SignupPage';
 function App() {
   return (
     
@@ -10,6 +13,9 @@ function App() {
       <Route path="/" element={<RootLayout/> }>
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
+          <Route path="users" element={<Users />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="signup" element={<SignupPage />} />
         </Route>
     </Routes>
     
