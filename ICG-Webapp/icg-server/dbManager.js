@@ -15,8 +15,8 @@ async function createUser(usrname, mail, psswrd) {
  
         console.log(`Creating user, usr: ${usrname}, mail: ${mail}, psswrd: ${psswrd}`);
         const query = {
-            text: 'INSERT INTO users(username, email, password) VALUES($1, $2, $3)',
-            values: [usrname, mail, psswrd],
+            text: 'INSERT INTO users(username, email, password, points) VALUES($1, $2, $3, $4)',
+            values: [usrname, mail, psswrd, 0],
           };
         await client.connect()
         await client.query(query);

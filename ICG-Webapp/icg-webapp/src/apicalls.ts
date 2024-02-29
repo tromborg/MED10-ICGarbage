@@ -1,6 +1,3 @@
-import { stat } from "fs";
-import { url } from "inspector";
-
 export interface IWebICGAPIClient {
 
     /**
@@ -21,11 +18,11 @@ export class WebICGApiClient implements IWebICGAPIClient {
     }
 
     post_new_user(userbody : UserRegistry): Promise<UserRegistry> {
-        let url_ = this.baseUrl + "registeruser";
+        let url_ = this.baseUrl + "/registeruser";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(userbody);
-
+        console.log("userbody: " + JSON.stringify(userbody));
         let options_ : RequestInit = {
             body: content_,
             method: "POST",
@@ -43,11 +40,12 @@ export class WebICGApiClient implements IWebICGAPIClient {
     protected processPost_new_user(response : Response): Promise<UserRegistry> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((value: any, key: any) => _headers[key] = value); };
-        if (status == 200) {
+        if (status == 201) {
             return response.text().then((_responseText) => {
                 let result201: any = null;
                 let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
                 result201 = UserRegistry.fromJS(resultData201);
+                console.log("result201: " + result201);
                 return result201
             });
         } else if (status !== 200 && status !== 204) {

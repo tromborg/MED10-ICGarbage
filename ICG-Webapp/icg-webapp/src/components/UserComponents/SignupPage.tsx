@@ -17,6 +17,10 @@ import {
   InputRightElement
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
+import { ApiService } from "../../services/ApiService";
+import { UserRegistry } from "../../apicalls";
+import { useNavigate } from "react-router-dom";
+import urls from "../urls";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -36,8 +40,18 @@ const SignupPage : FunctionComponent= () => {
     formState: { errors, isSubmitting },
   } = useForm<IUserForm>()
   const handleShowClick = () => setShowPassword(!showPassword);
+  const navigate = useNavigate();
+
   const handleSignup = (data: IUserForm) => {
     console.log("USERDATA: " + data);
+    let res = ApiService.client().post_new_user(new UserRegistry({
+      userName: data.username,
+      email: data.email,
+      password: data.password,
+      points: data.points
+    }));
+    navigate(urls.home);
+    console.log("resw: " + res);
   }
 
   function onSubmit(values: IUserForm) {
@@ -45,6 +59,8 @@ const SignupPage : FunctionComponent= () => {
     return new Promise((resolve) => {
       setTimeout(() => {
         alert(JSON.stringify(values.email, null, 2))
+        handleSignup(values);
+        
         Promise.resolve(resolve);
       }, 3000)
     })
