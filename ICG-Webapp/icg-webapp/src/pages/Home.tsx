@@ -44,15 +44,11 @@ const Home: FunctionComponent = () => {
     console.log("TotalChunks: " + Math.floor(fileSize / chunkSize));
     let totalChunks = Math.floor(fileSize / chunkSize);
     let chunkNum = 0;
-
+    let userId = "7";
     while (start < fileSize) {
       const chunk = selectedFile.slice(start, start + chunkSize);
       const formData = new FormData();
-      formData.append(
-        "videochunk",
-        chunk,
-        selectedFile.name + `, chunk: ${chunkNum}, total_chunks: ${totalChunks}`
-      );
+      formData.append('videochunk', chunk, selectedFile.name + `, chunk: ${chunkNum}, total_chunks: ${totalChunks}, Id: ${userId}`);
 
       try {
         let res = await axios.post(

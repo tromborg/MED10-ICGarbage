@@ -9,6 +9,7 @@ from flask import request, jsonify
 flask_app = create_app()
 celery_app = flask_app.extensions["celery"]
 
+
 def validate_key(f):
     @functools.wraps(f)
     def wrap(*args, **kwargs):
@@ -27,10 +28,13 @@ def validate_key(f):
             return flask.abort(400)
 
     return wrap
+
+
 @flask_app.get('/')
 def test() -> dict[str, object]:
     result = tasks.temp.delay()
     return {"result_id": result.id}
+
 
 @flask_app.post('/uploadvid')
 def upload_file():
@@ -50,9 +54,12 @@ def upload_file():
     print("filename: ", filename)
     print("chunknum: ", info_string[1])
     print("total: ", info_string[2])
+    print("userid: ", info_string[3])
     print(info_string)
     chunk_num = int(info_string[1].split(':')[1].strip())
     total_chunks = int(info_string[2].split(':')[1].strip())
+    userid = info_string[3].split(':')[1].strip()
+    print("idd: ", userid)
     # Create a file if it does not exist and append chunks
     with open(os.path.join(UPLOAD_FOLDER, filename), 'ab') as f:
         f.write(chunk)
@@ -64,11 +71,10 @@ def upload_file():
         filename = filename.split('.')[0]
         print("Renamed file: ", final_filename)
         upload_done = True
-        response = tasks.video_analysis.delay(final_filename, filename)
+        response = tasks.video_analysis.delay(final_filename, filename, userid)
         return jsonify({'message': 'File uploaded successfully',
                         'filename': final_filename, 'chunk_num': chunk_num,
                         'total_chunks': total_chunks, 'upload_done': upload_done, "task_id": response.id}), 200
-
 
     return jsonify({'chunk_num': chunk_num, 'total_chunks': total_chunks, 'upload_done': upload_done}), 200
 

@@ -25,14 +25,14 @@ def return_task_response(res):
     #req = urllib.request.Request(f'{url}/ebasblur', data={res}, headers={"Content-Type": "application/json"})
 
 @shared_task(bind=True, ignore_result=False)
-def video_analysis(self, filepath, filename):
+def video_analysis(self, filepath, filename, userid):
     print("[+] request received")
 
     try:
         icg = load_icg_instance()
         task_id = self.request.id
         print(filepath)
-        icg.perform_icg_analysis(filepath, filename)
+        icg.perform_icg_analysis(filepath, filename, userid)
         response = {'response': "resss"}
         json_res = json.dumps(response)
         print("[+] request handled for task: ", task_id)

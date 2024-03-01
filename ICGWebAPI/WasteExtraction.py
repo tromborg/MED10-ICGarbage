@@ -33,8 +33,8 @@ class WasteExtraction:
         print("We closing!")
         # Save image from 70 frames ago as picture of garbage. Makes ROI of the image, to filter out unnecessary noise.
         screenSize = fiftyFrame[0].shape[1] / 3
-        imageArray = fiftyFrame[:-40]
-        grabberXArrayminus40 = grabberXArray[:-40]
+        imageArray = fiftyFrame
+        grabberXArrayminus40 = grabberXArray
         yoloResults = model(imageArray, conf=0.4)
         frameNumber = 0
         validResults = []
@@ -53,7 +53,7 @@ class WasteExtraction:
                     print("grabberx: ", grabberXArrayminus40[frameNumber], "startgrabberX: ", grabberStartX)
                     frameNumber += 1
                     continue
-                if grabberXArrayminus40[frameNumber] - 40 > grabberStartX:
+                if grabberXArrayminus40[frameNumber] - 30 > grabberStartX:
                     print("grabberxareray: ", grabberXArrayminus40[frameNumber])
                     frameNumber += 1
                     continue
@@ -94,3 +94,4 @@ class WasteExtraction:
                 cv2.imwrite(f"testImages/{filename}" + str(self.imNum) + ".png", finalImage)
                 self.imNum += 1
         self.movement = True
+        return self.imNum
