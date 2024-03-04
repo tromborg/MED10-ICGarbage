@@ -3,5 +3,6 @@ CREATE TABLE users (
     username VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    signup_date DATE DEFAULT CURRENT_DATE
+    signup_date DATE DEFAULT CURRENT_DATE,
+    points INTEGER
 );
