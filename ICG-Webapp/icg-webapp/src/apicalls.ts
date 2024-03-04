@@ -60,14 +60,55 @@ export class WebICGApiClient implements IWebICGAPIClient {
      * @param id
      * @return OK 
      */
+    async check_login(userBody: UserRegistry): Promise<Object> {
+        let url_ = this.baseUrl + "/checklogin";
+        url_ = url_.replace(/[?&]$/, "");
+        
+        const content_ = JSON.stringify(userBody);
+        console.log("sending: " + content_);
+        let options_: RequestInit = {
+            body: content_,
+            method : "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response : Response) => {
+            return this.processCheck_login(_response);
+        })
+    }
+
+    protected processCheck_login(response: Response): Promise<Object> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((value: any, key: any) => _headers[key] = value); };
+        if (status == 200) {
+            return response.text().then((_responseText) => {
+                let result201: any = null;
+                let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                //result201 = UserRegistry.fromJS(resultData201);
+                console.log("result201: " + result201);
+                return resultData201;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+                return throwException("An unexpected server error ocurred.", status, _responseText, _headers);
+            })
+        }
+        return Promise.resolve<Object>(null as any);
+    }
+
     get_user(id: string): Promise<UserRegistry> {
+
         let url_ = this.baseUrl + "getuser/{id}";
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
         if (id === undefined || id === null){
             throw new Error("The parameter 'id' must be defined.");
         }
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
 
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
         let options_: RequestInit = {
             method : "GET",
             headers: {
@@ -79,7 +120,6 @@ export class WebICGApiClient implements IWebICGAPIClient {
             return this.processGet_user(_response);
         })
     }
-
     protected processGet_user(response: Response): Promise<UserRegistry> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((value: any, key: any) => _headers[key] = value); };

@@ -63,7 +63,7 @@ const SignupPage : FunctionComponent= () => {
         
         Promise.resolve(resolve);
       }, 3000)
-    })
+    });
   }
 
   return (

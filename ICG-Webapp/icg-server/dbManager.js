@@ -27,6 +27,40 @@ async function createUser(usrname, mail, psswrd) {
     }
 }
 
+async function checkLogin(usrname, psswrd) {
+    const dbInfo = {
+        user: settings.pgInfo.user,
+        host: settings.pgInfo.host,
+        database: settings.pgInfo.database,
+        password: settings.pgInfo.password,
+        port: settings.pgInfo.port,
+    }
+    const client = new Client(dbInfo);
+
+    try {
+        await client.connect();
+
+        const queryText = 'SELECT password FROM users WHERE username = $1';
+        const result = await client.query(queryText, [usrname]);
+
+        if (result.rows.length === 0) {
+            console.log("Cant find user");
+            return false; // User does not exist
+        }
+  
+        const storedPassword = result.rows[0].password;
+        console.log("usr: " + psswrd === storedPassword);
+        return psswrd === storedPassword;
+    } catch (error) {
+        console.error('Error checking user and password:', error);
+        return false;
+
+    } finally {
+        
+        await client.end();
+    }
+}
+
 async function testConn(){
     console.error('Testing database connection');
        
@@ -45,6 +79,6 @@ async function testConn(){
     await client.end()
 }
 
-module.exports = {createUser, testConn}
+module.exports = {createUser, testConn, checkLogin}
 
 

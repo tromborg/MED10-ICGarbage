@@ -16,15 +16,53 @@ import {
   InputRightElement
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { ApiService } from "../../services/ApiService";
+import urls from "../urls";
+import { UserRegistry } from "../../apicalls";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
 
+interface ILoginForm {
+  username: string,
+  password: string
+}
+
 const LoginPage : FunctionComponent= () => {
   const [showPassword, setShowPassword] = useState(false);
 
+  const {
+    handleSubmit,
+    register,
+    formState: { errors, isSubmitting },
+  } = useForm<ILoginForm>()
+  const navigate = useNavigate();
   const handleShowClick = () => setShowPassword(!showPassword);
 
+  const handleLogin = async (data: ILoginForm) => {
+    console.log("USERDATA: " + data);
+    let res = await ApiService.client().check_login(new UserRegistry({
+      userName: data.username,
+      password: data.password
+    }));
+    navigate(urls.home);
+    res = JSON.stringify(res);
+    console.log("resw: " + res);
+  }
+
+  function onSubmit(values: ILoginForm) {
+    console.log("vals: " + ", " + values.username + ", " + values.password);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        alert(JSON.stringify(values.username, null, 2))
+        handleLogin(values);
+        
+        Promise.resolve(resolve);
+      }, 3000)
+    })
+  }
   return (
     <Flex
       flexDirection="column"
@@ -43,7 +81,7 @@ const LoginPage : FunctionComponent= () => {
         <Avatar bg="teal.500" />
         <Heading color="teal.400">Welcome</Heading>
         <Box minW={{ base: "90%", md: "468px" }}>
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <Stack
               spacing={4}
               p="1rem"
@@ -56,7 +94,14 @@ const LoginPage : FunctionComponent= () => {
                     pointerEvents="none"
                     children={<CFaUserAlt color="gray.300" />}
                   />
-                  <Input type="email" placeholder="email address" />
+                  <Input 
+                  type="username" 
+                  placeholder="username" 
+                  {...register('username', {
+                    required: 'This is required',
+                    minLength: { value: 4, message: 'Minimum length should be 4' },
+                  })}
+                  />
                 </InputGroup>
               </FormControl>
               <FormControl>
@@ -69,6 +114,10 @@ const LoginPage : FunctionComponent= () => {
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
+                    {...register('password', {
+                      required: 'This is required',
+                      minLength: { value: 4, message: 'Minimum length should be 4' },
+                    })}
                   />
                   <InputRightElement width="4.5rem">
                     <Button h="1.75rem" size="sm" onClick={handleShowClick}>
@@ -86,6 +135,7 @@ const LoginPage : FunctionComponent= () => {
                 variant="solid"
                 colorScheme="teal"
                 width="full"
+                isLoading={isSubmitting}
               >
                 Login
               </Button>

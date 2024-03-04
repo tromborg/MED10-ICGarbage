@@ -23,6 +23,14 @@ app.post('/api/registeruser', jsonParser, async (req, res) => {
     res.sendStatus(200);
 });
 
+app.post('/api/checklogin', jsonParser, async (req, res) => {
+    let body = JSON.parse(JSON.stringify(req.body));
+    console.log("reqbody: " + body.userName);
+    let user = await dbManager.checkLogin(body.userName, body.password);
+    console.log("usercheck: " + user);
+    res.status(200).send(`{"loginCheck": ${user}}`);
+});
+
 app.get('/test', async (req, res) => {
     console.log('/test request recevied');
     await dbManager.testConn();
