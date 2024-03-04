@@ -19,10 +19,24 @@ export class UserService  {
         });
 
         const apiRes = await ApiService.client().post_new_user(newUser);
-        console.log("res: " + apiRes);
+        console.log("resservice: " + apiRes);
         } catch (e) {
             console.log("User error: " + e);
         }
     }
 
+    async CheckUserLogin(userBody : UserBody){
+        try {
+            let loginInfo = new UserRegistry({
+                userName: userBody.userName,
+                password: userBody.password,
+            });
+            let res = await ApiService.client().check_login(loginInfo);
+            return res
+
+        } catch (e) {
+            console.log("User error: " + e);
+            return {"loginCheck":false}
+        }
+    }
 }

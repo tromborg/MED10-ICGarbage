@@ -85,11 +85,11 @@ export class WebICGApiClient implements IWebICGAPIClient {
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((value: any, key: any) => _headers[key] = value); };
         if (status == 200) {
             return response.text().then((_responseText) => {
-                let result201: any = null;
-                let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+                let result200: any = null;
+                let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
                 //result201 = UserRegistry.fromJS(resultData201);
-                console.log("result201: " + result201);
-                return resultData201;
+                console.log("result201: " + result200);
+                return resultData200;
             });
         } else if (status !== 200 && status !== 204) {
             return response.text().then((_responseText) => {

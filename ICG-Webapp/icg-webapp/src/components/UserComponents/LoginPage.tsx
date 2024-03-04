@@ -18,16 +18,17 @@ import {
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { ApiService } from "../../services/ApiService";
 import urls from "../urls";
-import { UserRegistry } from "../../apicalls";
+import { UserBody, UserService } from "../../models/UserService";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
 
 interface ILoginForm {
-  username: string,
-  password: string
+  userName: string,
+  password: string,
+  email: string,
+  points: number
 }
 
 const LoginPage : FunctionComponent= () => {
@@ -43,20 +44,18 @@ const LoginPage : FunctionComponent= () => {
 
   const handleLogin = async (data: ILoginForm) => {
     console.log("USERDATA: " + data);
-    let res = await ApiService.client().check_login(new UserRegistry({
-      userName: data.username,
-      password: data.password
-    }));
+    let userService = new UserService;
+    let res = await userService.CheckUserLogin(data as UserBody);
     navigate(urls.home);
     res = JSON.stringify(res);
     console.log("resw: " + res);
   }
 
   function onSubmit(values: ILoginForm) {
-    console.log("vals: " + ", " + values.username + ", " + values.password);
+    console.log("vals: " + ", " + values.userName + ", " + values.password);
     return new Promise((resolve) => {
       setTimeout(() => {
-        alert(JSON.stringify(values.username, null, 2))
+        alert(JSON.stringify(values.userName, null, 2))
         handleLogin(values);
         
         Promise.resolve(resolve);
@@ -97,7 +96,7 @@ const LoginPage : FunctionComponent= () => {
                   <Input 
                   type="username" 
                   placeholder="username" 
-                  {...register('username', {
+                  {...register('userName', {
                     required: 'This is required',
                     minLength: { value: 4, message: 'Minimum length should be 4' },
                   })}

@@ -21,12 +21,13 @@ import { ApiService } from "../../services/ApiService";
 import { UserRegistry } from "../../apicalls";
 import { useNavigate } from "react-router-dom";
 import urls from "../urls";
+import { UserBody, UserService } from "../../models/UserService";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
 
 interface IUserForm {
-  username: string;
+  userName: string;
   email: string;
   password: string;
   points: number;
@@ -42,20 +43,23 @@ const SignupPage : FunctionComponent= () => {
   const handleShowClick = () => setShowPassword(!showPassword);
   const navigate = useNavigate();
 
-  const handleSignup = (data: IUserForm) => {
+  const handleSignup = async (data: IUserForm) => {
+    let userService = new UserService;
+    await userService.RegisterUser(data as UserBody);
     console.log("USERDATA: " + data);
+    /*
     let res = ApiService.client().post_new_user(new UserRegistry({
-      userName: data.username,
+      userName: data.userName,
       email: data.email,
       password: data.password,
       points: data.points
     }));
+    */
     navigate(urls.home);
-    console.log("resw: " + res);
   }
 
   function onSubmit(values: IUserForm) {
-    console.log("vals: " + values.email + ", " + values.username + ", " + values.password + ", " + values.points);
+    console.log("vals: " + values.email + ", " + values.userName + ", " + values.password + ", " + values.points);
     return new Promise((resolve) => {
       setTimeout(() => {
         alert(JSON.stringify(values.email, null, 2))
@@ -100,7 +104,7 @@ const SignupPage : FunctionComponent= () => {
                         <Input 
                           type="username" 
                           placeholder="username"
-                          {...register('username', {
+                          {...register('userName', {
                             required: 'This is required',
                             minLength: { value: 4, message: 'Minimum length should be 4' },
                           })}
