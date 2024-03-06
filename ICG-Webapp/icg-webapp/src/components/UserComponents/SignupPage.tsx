@@ -14,14 +14,14 @@ import {
   Avatar,
   FormControl,
   FormHelperText,
-  InputRightElement
+  InputRightElement,
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { ApiService } from "../../services/ApiService";
 import { UserRegistry } from "../../apicalls";
 import { useNavigate } from "react-router-dom";
 import urls from "../urls";
-import { UserBody, UserService } from "../../models/UserService";
+import { UserBody, UserService } from "../../models/userService";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -33,18 +33,18 @@ interface IUserForm {
   points: number;
 }
 
-const SignupPage : FunctionComponent= () => {
+const SignupPage: FunctionComponent = () => {
   const [showPassword, setShowPassword] = useState(false);
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
-  } = useForm<IUserForm>()
+  } = useForm<IUserForm>();
   const handleShowClick = () => setShowPassword(!showPassword);
   const navigate = useNavigate();
 
   const handleSignup = async (data: IUserForm) => {
-    let userService = new UserService;
+    let userService = new UserService();
     await userService.RegisterUser(data as UserBody);
     console.log("USERDATA: " + data);
     /*
@@ -56,17 +56,26 @@ const SignupPage : FunctionComponent= () => {
     }));
     */
     navigate(urls.home);
-  }
+  };
 
   function onSubmit(values: IUserForm) {
-    console.log("vals: " + values.email + ", " + values.userName + ", " + values.password + ", " + values.points);
+    console.log(
+      "vals: " +
+        values.email +
+        ", " +
+        values.userName +
+        ", " +
+        values.password +
+        ", " +
+        values.points
+    );
     return new Promise((resolve) => {
       setTimeout(() => {
-        alert(JSON.stringify(values.email, null, 2))
+        alert(JSON.stringify(values.email, null, 2));
         handleSignup(values);
-        
+
         Promise.resolve(resolve);
-      }, 3000)
+      }, 3000);
     });
   }
 
@@ -95,70 +104,79 @@ const SignupPage : FunctionComponent= () => {
               backgroundColor="whiteAlpha.900"
               boxShadow="md"
             >
-                <FormControl>
-                    <InputGroup>
-                        <InputLeftElement
-                            pointerEvents="none"
-                            children={<CFaUserAlt color="gray.300" />}
-                        />
-                        <Input 
-                          type="username" 
-                          placeholder="username"
-                          {...register('userName', {
-                            required: 'This is required',
-                            minLength: { value: 4, message: 'Minimum length should be 4' },
-                          })}
-                          />
-                    </InputGroup>
-                </FormControl>
-                <FormControl>
-                    <InputGroup>
-                        <InputLeftElement
-                            pointerEvents="none"
-                            children={<CFaUserAlt color="gray.300" />}
-                        />
-                        <Input 
-                          type="email" 
-                          placeholder="email address"
-                          {...register('email', {
-                            required: 'This is required',
-                            minLength: { value: 4, message: 'Minimum length should be 4' },
-                          })}
-                          />
-                    </InputGroup>
-                </FormControl>
-                <FormControl>
-                    <InputGroup>
-                        <InputLeftElement
-                            pointerEvents="none"
-                            color="gray.300"
-                            children={<CFaLock color="gray.300" />}
-                        />
-                        <Input
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Password"
-                            {...register('password', {
-                              required: 'This is required',
-                              minLength: { value: 4, message: 'Minimum length should be 4' },
-                            })}
-                        />
-                        <InputRightElement width="4.5rem">
-                            <Button h="1.75rem" size="sm" onClick={handleShowClick}>
-                                {showPassword ? "Hide" : "Show"}
-                            </Button>
-                        </InputRightElement>
-                    </InputGroup>
-                </FormControl>
-                <Button
-                    borderRadius={0}
-                    type="submit"
-                    variant="solid"
-                    colorScheme="teal"
-                    width="full"
-                    isLoading={isSubmitting}
-                >
-                    Sign up
-                </Button>
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement
+                    pointerEvents="none"
+                    children={<CFaUserAlt color="gray.300" />}
+                  />
+                  <Input
+                    type="username"
+                    placeholder="username"
+                    {...register("userName", {
+                      required: "This is required",
+                      minLength: {
+                        value: 4,
+                        message: "Minimum length should be 4",
+                      },
+                    })}
+                  />
+                </InputGroup>
+              </FormControl>
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement
+                    pointerEvents="none"
+                    children={<CFaUserAlt color="gray.300" />}
+                  />
+                  <Input
+                    type="email"
+                    placeholder="email address"
+                    {...register("email", {
+                      required: "This is required",
+                      minLength: {
+                        value: 4,
+                        message: "Minimum length should be 4",
+                      },
+                    })}
+                  />
+                </InputGroup>
+              </FormControl>
+              <FormControl>
+                <InputGroup>
+                  <InputLeftElement
+                    pointerEvents="none"
+                    color="gray.300"
+                    children={<CFaLock color="gray.300" />}
+                  />
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Password"
+                    {...register("password", {
+                      required: "This is required",
+                      minLength: {
+                        value: 4,
+                        message: "Minimum length should be 4",
+                      },
+                    })}
+                  />
+                  <InputRightElement width="4.5rem">
+                    <Button h="1.75rem" size="sm" onClick={handleShowClick}>
+                      {showPassword ? "Hide" : "Show"}
+                    </Button>
+                  </InputRightElement>
+                </InputGroup>
+              </FormControl>
+              <Button
+                borderRadius={0}
+                type="submit"
+                variant="solid"
+                colorScheme="teal"
+                width="full"
+                isLoading={isSubmitting}
+              >
+                Sign up
+              </Button>
             </Stack>
           </form>
         </Box>

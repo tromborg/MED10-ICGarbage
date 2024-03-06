@@ -13,54 +13,60 @@ import {
   Avatar,
   FormControl,
   FormHelperText,
-  InputRightElement
+  InputRightElement,
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import urls from "../urls";
-import { UserBody, UserService } from "../../models/UserService";
+import { UserBody, UserService } from "../../models/userService";
+import { AppDispatch } from "../../store/store";
+import { useDispatch } from "react-redux";
+import { setLogin } from "../../store/reducers/login";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
 
 interface ILoginForm {
-  userName: string,
-  password: string,
-  email: string,
-  points: number
+  userName: string;
+  password: string;
+  email: string;
+  points: number;
 }
 
-const LoginPage : FunctionComponent= () => {
+const LoginPage: FunctionComponent = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting },
-  } = useForm<ILoginForm>()
+  } = useForm<ILoginForm>();
   const navigate = useNavigate();
   const handleShowClick = () => setShowPassword(!showPassword);
+  const loginDispatch = useDispatch<AppDispatch>();
 
   const handleLogin = async (data: ILoginForm) => {
     console.log("USERDATA: " + data);
-    let userService = new UserService;
+    let userService = new UserService();
     let res = await userService.CheckUserLogin(data as UserBody);
     navigate(urls.home);
-    res = JSON.stringify(res);
     console.log("resw: " + res);
-  }
+    if (res === true) {
+      loginDispatch(setLogin(true));
+    }
+  };
 
   function onSubmit(values: ILoginForm) {
     console.log("vals: " + ", " + values.userName + ", " + values.password);
     return new Promise((resolve) => {
       setTimeout(() => {
-        alert(JSON.stringify(values.userName, null, 2))
+        alert(JSON.stringify(values.userName, null, 2));
         handleLogin(values);
-        
+
         Promise.resolve(resolve);
-      }, 3000)
-    })
+      }, 3000);
+    });
   }
   return (
     <Flex
@@ -93,13 +99,16 @@ const LoginPage : FunctionComponent= () => {
                     pointerEvents="none"
                     children={<CFaUserAlt color="gray.300" />}
                   />
-                  <Input 
-                  type="username" 
-                  placeholder="username" 
-                  {...register('userName', {
-                    required: 'This is required',
-                    minLength: { value: 4, message: 'Minimum length should be 4' },
-                  })}
+                  <Input
+                    type="username"
+                    placeholder="username"
+                    {...register("userName", {
+                      required: "This is required",
+                      minLength: {
+                        value: 4,
+                        message: "Minimum length should be 4",
+                      },
+                    })}
                   />
                 </InputGroup>
               </FormControl>
@@ -113,9 +122,12 @@ const LoginPage : FunctionComponent= () => {
                   <Input
                     type={showPassword ? "text" : "password"}
                     placeholder="Password"
-                    {...register('password', {
-                      required: 'This is required',
-                      minLength: { value: 4, message: 'Minimum length should be 4' },
+                    {...register("password", {
+                      required: "This is required",
+                      minLength: {
+                        value: 4,
+                        message: "Minimum length should be 4",
+                      },
                     })}
                   />
                   <InputRightElement width="4.5rem">

@@ -24,8 +24,6 @@ const Home: FunctionComponent = () => {
   const isLoggedIn = useSelector((state: RootState) => state.login.isLoggedIn);
   const dispatch = useDispatch<AppDispatch>();
 
-  console.log("is logged in: " + isLoggedIn);
-
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
       setSelectedFile(event.target.files[0]);
@@ -48,7 +46,12 @@ const Home: FunctionComponent = () => {
     while (start < fileSize) {
       const chunk = selectedFile.slice(start, start + chunkSize);
       const formData = new FormData();
-      formData.append('videochunk', chunk, selectedFile.name + `, chunk: ${chunkNum}, total_chunks: ${totalChunks}, Id: ${userId}`);
+      formData.append(
+        "videochunk",
+        chunk,
+        selectedFile.name +
+          `, chunk: ${chunkNum}, total_chunks: ${totalChunks}, Id: ${userId}`
+      );
 
       try {
         let res = await axios.post(
@@ -82,10 +85,6 @@ const Home: FunctionComponent = () => {
 
     console.log("Upload completed");
   };
-
-  React.useEffect(() => {
-    dispatch(setLogin(true));
-  }, []);
 
   return (
     <Container>
