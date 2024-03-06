@@ -21,7 +21,7 @@ import { ApiService } from "../../services/ApiService";
 import { UserRegistry } from "../../apicalls";
 import { useNavigate } from "react-router-dom";
 import urls from "../urls";
-import { UserBody, UserService } from "../../models/userService";
+import { UserBody, UserService } from "../../models/UserService";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
