@@ -7,7 +7,8 @@ from Tracking import Tracking
 import json
 import psycopg2 as ps
 from psycopg2 import Error
-
+import psycopg2.extras
+import uuid
 
 class ICGAnalysis:
     def __init__(self):
@@ -43,6 +44,7 @@ class ICGAnalysis:
             # cv2.imshow('current', frame)
             if type(frame) == type(None):
                 self.update_points(user_id=userid, points=img_points)
+                self.update_videodata(user_id=userid, videoid=filename, points=img_points)
                 print("ICG analysis complete.")
                 cap.release()
             left, right = self.getROI(frame)
@@ -86,7 +88,43 @@ class ICGAnalysis:
         cap.release()
         cv2.destroyAllWindows()
 
+    def update_videodata(self, user_id, videoid, points):
+        try:
+            # Database connection parameters
+            db_params = {
+                'host': f'{settings.PG_HOST}',
+                'port': f'{settings.PG_PORT}',
+                'database': f'{settings.PG_DATABASE}',
+                'user': f'{settings.PG_USER}',
+                'password': f'{settings.PG_PASSWORD}'
+            }
+            psycopg2.extras.register_uuid()
+            connection = ps.connect(**db_params)
 
+            # Create a cursor object using the cursor() method
+            cursor = connection.cursor()
+
+            user_id = uuid.UUID(user_id)
+            # Insert extraction summary
+            insert_query = f"INSERT INTO videodata(userid, videoid, points) VALUES('{str(user_id)}', '{videoid}', {points})"
+            cursor.execute(insert_query)
+
+            # Commit the transaction
+            connection.commit()
+
+            # Print success message
+            print(f"Image extraction successfully inserted for user ID {user_id}")
+
+        except (Exception, Error) as error:
+            print("Error while updating points:", error)
+
+        finally:
+            # Closing database connection.
+            if connection:
+                cursor.close()
+                connection.close()
+                print("PostgreSQL connection is closed")
+        pass
     # Function to update points for a specific user ID
     def update_points(self, user_id, points):
         try:

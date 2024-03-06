@@ -78,7 +78,7 @@ export class WebICGApiClient implements IWebICGAPIClient {
    * @param id
    * @return OK
    */
-  async check_login(userBody: UserRegistry): Promise<Object> {
+  async check_login(userBody: UserRegistry): Promise<LoginInstance> {
     let url_ = this.baseUrl + "/checklogin";
     url_ = url_.replace(/[?&]$/, "");
 
@@ -98,7 +98,7 @@ export class WebICGApiClient implements IWebICGAPIClient {
     });
   }
 
-  protected processCheck_login(response: Response): Promise<Object> {
+  protected processCheck_login(response: Response): Promise<LoginInstance> {
     const status = response.status;
     let _headers: any = {};
     if (response.headers && response.headers.forEach) {
@@ -127,7 +127,7 @@ export class WebICGApiClient implements IWebICGAPIClient {
         );
       });
     }
-    return Promise.resolve<Object>(null as any);
+    return Promise.resolve<LoginInstance>(null as any);
   }
 
   get_user(id: string): Promise<UserRegistry> {
@@ -185,6 +185,47 @@ export class WebICGApiClient implements IWebICGAPIClient {
     return Promise.resolve<UserRegistry>(null as any);
   }
 }
+
+export class LoginInstance implements ILoginInstance {
+    userId?: string | undefined;
+    isLoggedIn?: boolean | undefined;
+    
+    constructor(data?: IUserRegistry) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property)) {
+                    (<any>this)[property] = (<any>data)[property];
+                }
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+          this.userId = _data["userId"];
+          this.isLoggedIn = _data['isLoggedIn'];
+        }
+    }
+    
+      static fromJS(data: any): LoginInstance {
+        data = typeof data === "object" ? data : {};
+        let result = new LoginInstance();
+        result.init(data);
+        return result;
+    }
+    
+      toJSON(data?: any) {
+        data = typeof data === "object" ? data : {};
+        data["userId"] = this.userId
+        return data;
+    }
+
+}
+
+export interface ILoginInstance {
+    userId?: string;
+    isLoggedIn?: boolean;
+  }
 
 export class UserRegistry implements IUserRegistry {
   userName?: string;

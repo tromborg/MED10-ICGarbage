@@ -1,8 +1,15 @@
-CREATE TABLE users (
-    userid SERIAL PRIMARY KEY,
-    username VARCHAR(255) NOT NULL,
-    email VARCHAR(255) NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    signup_date DATE DEFAULT CURRENT_DATE,
-    points INTEGER
-);
+CREATE TABLE users
+(
+    userid uuid DEFAULT gen_random_uuid(),
+    username character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    email character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    password character varying(255) COLLATE pg_catalog."default" NOT NULL,
+    signup_date date DEFAULT CURRENT_DATE,
+    points integer,
+    PRIMARY KEY (userid)
+)
+
+TABLESPACE pg_default;
+
+ALTER TABLE users
+    OWNER to icgadmin;

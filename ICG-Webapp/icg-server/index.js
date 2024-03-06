@@ -31,7 +31,8 @@ app.post("/api/checklogin", jsonParser, async (req, res) => {
   console.log("reqbody: " + body.userName);
   let user = await dbManager.checkLogin(body.userName, body.password);
   console.log("usercheck: " + user);
-  res.status(200).send(user);
+  let loginInstance = {"userId":"410a2388-804e-44c2-983b-470c6e5e1277", "isLoggedIn": user}
+  res.status(200).send(loginInstance);
 });
 
 app.get("/test", async (req, res) => {

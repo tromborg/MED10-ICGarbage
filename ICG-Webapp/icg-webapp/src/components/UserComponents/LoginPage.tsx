@@ -50,9 +50,12 @@ const LoginPage: FunctionComponent = () => {
     console.log("USERDATA: " + data);
     let userService = new UserService();
     let res = await userService.CheckUserLogin(data as UserBody);
+
     navigate(urls.home);
     console.log("resw: " + res);
-    if (res === true) {
+    if (res.isLoggedIn === true) {
+      console.log(`userid: ${res.userId}`);
+      console.log(`isloggedin: ${res.isLoggedIn === true}`);
       loginDispatch(setLogin(true));
     }
   };

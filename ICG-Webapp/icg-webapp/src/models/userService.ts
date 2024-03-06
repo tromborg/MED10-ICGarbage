@@ -1,4 +1,4 @@
-import { UserRegistry } from "../apicalls";
+import { LoginInstance, UserRegistry } from "../apicalls";
 import { ApiService } from "../services/ApiService";
 
 export type UserBody = {
@@ -25,7 +25,7 @@ export class UserService  {
         }
     }
 
-    async CheckUserLogin(userBody : UserBody){
+    async CheckUserLogin(userBody : UserBody): Promise<LoginInstance>{
         try {
             let loginInfo = new UserRegistry({
                 userName: userBody.userName,
@@ -36,7 +36,7 @@ export class UserService  {
 
         } catch (e) {
             console.log("User error: " + e);
-            return {"loginCheck":false}
+            return new LoginInstance
         }
     }
 }

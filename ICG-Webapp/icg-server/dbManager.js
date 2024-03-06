@@ -1,6 +1,6 @@
 const {Client} = require('pg');
 const settings = require('./settings').settings;
-
+const { v4: uuidv4 } = require('uuid');
 
 async function createUser(usrname, mail, psswrd) {     
     try {
@@ -59,6 +59,18 @@ async function checkLogin(usrname, psswrd) {
         
         await client.end();
     }
+}
+
+async function getUserStats(user_id){
+    // Get total user points from users table
+    // Get all instances of uploads and their respective points and timestamps from videodata table
+    // Create JS and Oject with timeseries data (totalpoint: total, points: weekly, monthly) for overview
+    
+}
+
+async function getScoreboardData(){
+    // Return JS Object with all usernames and their total points, all from users table
+    
 }
 
 async function testConn(){

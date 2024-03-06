@@ -42,7 +42,7 @@ const Home: FunctionComponent = () => {
     console.log("TotalChunks: " + Math.floor(fileSize / chunkSize));
     let totalChunks = Math.floor(fileSize / chunkSize);
     let chunkNum = 0;
-    let userId = "7";
+    let userId = "410a2388-804e-44c2-983b-470c6e5e1277";
     while (start < fileSize) {
       const chunk = selectedFile.slice(start, start + chunkSize);
       const formData = new FormData();
