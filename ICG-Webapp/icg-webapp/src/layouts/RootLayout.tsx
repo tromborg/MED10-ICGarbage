@@ -1,8 +1,13 @@
 import { Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import themes from '../design/themes';
-import { Box, Container, Flex, VStack } from '@chakra-ui/react'
-const RootLayout = () => {
+import { Flex } from '@chakra-ui/react';
+import { FunctionComponent } from "react";
+
+const RootLayout: FunctionComponent = () => {
+
+    
+  
     return (
         <Flex direction="column" h="100vh">
             <Navbar />

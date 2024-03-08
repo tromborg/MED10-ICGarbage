@@ -49,11 +49,15 @@ async function checkLogin(usrname, psswrd) {
         }
   
         const storedPassword = result.rows[0].password;
-        console.log("usr: " + psswrd === storedPassword);
-        return psswrd === storedPassword;
+
+        const useridQuery = 'SELECT userid FROM users WHERE username = $1';
+        const resultId = await client.query(useridQuery, [usrname]);
+        const userid = resultId.rows[0].userid;
+        let loginInstance = {"userId":`${userid}`, "isLoggedIn": psswrd === storedPassword}
+        return loginInstance;
     } catch (error) {
         console.error('Error checking user and password:', error);
-        return false;
+        return {"userId":`none`, "isLoggedIn": false};
 
     } finally {
         

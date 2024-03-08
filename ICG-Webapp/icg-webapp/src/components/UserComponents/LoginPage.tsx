@@ -23,6 +23,7 @@ import { UserBody, UserService } from "../../models/UserService";
 import { AppDispatch } from "../../store/store";
 import { useDispatch } from "react-redux";
 import { setLogin } from "../../store/reducers/login";
+import { userSessionDb } from "../../components/SessionDB";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -57,6 +58,16 @@ const LoginPage: FunctionComponent = () => {
       console.log(`userid: ${res.userId}`);
       console.log(`isloggedin: ${res.isLoggedIn === true}`);
       loginDispatch(setLogin(true));
+      await userSessionDb.addUser(
+        res.userId as string,
+        res.isLoggedIn,
+        new Date().toDateString()
+      );
+      
+      let usersesh = userSessionDb.getUserFromSessionDb();
+      console.log("TESTDB, ID: " + (await usersesh).userId);
+      console.log("TESTDB, IsLoggedIn: " + (await usersesh).isLoggedIn);
+      console.log("TESTDB, Timestmap: " + (await usersesh).loginTimestamp);
     }
   };
 

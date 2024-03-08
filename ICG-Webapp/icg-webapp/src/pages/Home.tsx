@@ -13,8 +13,8 @@ import LogoSvg from "../design/logo/png/logo-no-background.png";
 import React, { useState } from "react";
 import axios from "axios";
 import { AppDispatch, RootState } from "../store/store";
-import { UseSelector, useDispatch, useSelector } from "react-redux";
-import { setLogin } from "../store/reducers/login";
+import {  useDispatch, useSelector } from "react-redux";
+import { userSessionDb } from "../components/SessionDB";
 
 const Home: FunctionComponent = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -22,7 +22,6 @@ const Home: FunctionComponent = () => {
   const [totalChunkNum, setTotalChunkNum] = useState(0);
   const [loadingValue, setLoadingValue] = useState(0);
   const isLoggedIn = useSelector((state: RootState) => state.login.isLoggedIn);
-  const dispatch = useDispatch<AppDispatch>();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -42,7 +41,9 @@ const Home: FunctionComponent = () => {
     console.log("TotalChunks: " + Math.floor(fileSize / chunkSize));
     let totalChunks = Math.floor(fileSize / chunkSize);
     let chunkNum = 0;
-    let userId = "410a2388-804e-44c2-983b-470c6e5e1277";
+    let userSession = await userSessionDb.getUserFromSessionDb();
+    const userId = userSession.userId!;
+
     while (start < fileSize) {
       const chunk = selectedFile.slice(start, start + chunkSize);
       const formData = new FormData();
