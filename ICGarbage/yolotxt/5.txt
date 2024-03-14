@@ -1,1 +1,1 @@
-Class here 0.66 0.46 0.464 0.32
+bbox: tensor(589.1514) tensor(301.5494) tensor(740.4055) tensor(494.3725)

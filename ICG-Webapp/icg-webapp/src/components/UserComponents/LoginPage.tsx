@@ -19,7 +19,7 @@ import { FaUserAlt, FaLock } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import urls from "../urls";
-import { UserBody, UserService } from "../../models/UserService";
+import { UserBody, UserService } from "../../models/userService";
 import { AppDispatch } from "../../store/store";
 import { useDispatch } from "react-redux";
 import { setLogin } from "../../store/reducers/login";
@@ -63,7 +63,7 @@ const LoginPage: FunctionComponent = () => {
         res.isLoggedIn,
         new Date().toDateString()
       );
-      
+
       let usersesh = userSessionDb.getUserFromSessionDb();
       console.log("TESTDB, ID: " + (await usersesh).userId);
       console.log("TESTDB, IsLoggedIn: " + (await usersesh).isLoggedIn);

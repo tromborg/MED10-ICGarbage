@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import imagehash
+from PIL import Image
 
 class WasteExtraction:
     def __init__(self, contourval=80):
@@ -18,6 +20,8 @@ class WasteExtraction:
         self.imNum = 0
         self.minBoundingVal = 0
         self.minBlurVal = 0
+        self.prevImg = []
+        self.hashVal = 6
 
 
     def getROI(self, currentFrame):
@@ -74,23 +78,35 @@ class WasteExtraction:
                 resultsArray.append(allResults)
                 if boxArea > self.minBoundingVal:
                     self.minBoundingVal = boxArea
-                    biggestboxes = validResults[i]
-                    finalImages = validFrames[validFramesNumber]
                 validFramesNumber += 1
                 # Resets the minBoundingVal variable so it is ready for a new image segmentation. Also sets movement to tru to start the timer.
             self.minBoundingVal = 0
             sorted_results = sorted(resultsArray, key=lambda x: x[2], reverse=True)
-            top10 = sorted_results[:10]
+            top10 = sorted_results
             for i in range(0,len(top10)):
                 variance_laplacian = cv2.Laplacian(top10[i][1], cv2.CV_64F).var()
                 if variance_laplacian > self.minBlurVal:
                     self.minBlurVal = variance_laplacian
                     biggestbox = top10[i][0]
+                    print("biggestbox: ", biggestbox.boxes.xyxy)
                     finalImage = top10[i][1]
             self.minBlurVal = 0
-            if finalImage is not None:
+            if self.imNum == 0:
+                self.prevImg = finalImage[int(biggestbox.boxes.xyxy[0][1]):int(biggestbox.boxes.xyxy[0][3]),
+                            int(biggestbox.boxes.xyxy[0][0]):int(biggestbox.boxes.xyxy[0][2])]
+            else:
+                hash1 = imagehash.average_hash(Image.fromarray(finalImage))
+                hash2 = imagehash.average_hash(Image.fromarray(self.prevImg))
+                self.hashVal = hash1 - hash2
+                print("hashVal: ", self.hashVal)
+                self.prevImg = finalImage[int(biggestbox.boxes.xyxy[0][1]):int(biggestbox.boxes.xyxy[0][3]),
+                            int(biggestbox.boxes.xyxy[0][0]):int(biggestbox.boxes.xyxy[0][2])]
+            if finalImage is not None and self.hashVal > 5:
                 cv2.rectangle(finalImage, (int(biggestbox.boxes.xyxy[0][0]), int(biggestbox.boxes.xyxy[0][1])),
                               (int(biggestbox.boxes.xyxy[0][2]), int(biggestbox.boxes.xyxy[0][3])), (0, 255, 0), thickness=2)
                 cv2.imwrite("testImages/test" + str(self.imNum) + ".png", finalImage)
+                f1 = open("yolotxt/" + str(self.imNum) + ".txt", "w+")
+                f1.write("bbox: " + str(biggestbox.boxes.xyxy[0][0]) + " " + str(biggestbox.boxes.xyxy[0][1]) + " " + str(biggestbox.boxes.xyxy[0][2]) + " " + str(biggestbox.boxes.xyxy[0][3]))
+                f1.close()
                 self.imNum += 1
         self.movement = True

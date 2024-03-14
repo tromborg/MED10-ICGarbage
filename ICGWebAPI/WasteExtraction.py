@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+import imagehash
+from PIL import Image
 
 class WasteExtraction:
     def __init__(self, contourval=80):
@@ -43,14 +45,15 @@ class WasteExtraction:
         validPairs = []
         resultsArray = []
         finalImage = None
+
         for result in yoloResults:
             if len(result.boxes) > 0:
                 if int(result.boxes.xyxy[0][0]) < leftbbox[2] and int(result.boxes.xyxy[0][3]) > leftbbox[1]:
-                    print("grabberx: ", grabberXArrayminus40[frameNumber], "startgrabberX: ", grabberStartX)
+                    print("leftX: ", int(result.boxes.xyxy[0][0]), "leftY: ", int(result.boxes.xyxy[0][3]))
                     frameNumber += 1
                     continue
-                if int(result.boxes.xyxy[0][2]) > rightbbox[0] and int(result.boxes.xyxy[0][3] > rightbbox[1]):
-                    print("grabberx: ", grabberXArrayminus40[frameNumber], "startgrabberX: ", grabberStartX)
+                if int(result.boxes.xyxy[0][2]) > rightbbox[0] and int(result.boxes.xyxy[0][3]) > rightbbox[1]:
+                    print("rightX: ", int(result.boxes.xyxy[0][2]), "rightY: ", int(result.boxes.xyxy[0][3]))
                     frameNumber += 1
                     continue
                 if grabberXArrayminus40[frameNumber] - 30 > grabberStartX:
@@ -66,7 +69,8 @@ class WasteExtraction:
                     validFrames.append(fiftyFrame[frameNumber])
             frameNumber += 1
         if len(validResults) > 0:
-            for i in range(0,len(validResults)):
+            print("length: ", len(validResults))
+            for i in range(0, len(validResults)):
                 boxWidth = int(validPairs[i][0].boxes.xyxy[0][2]) - int(validPairs[i][0].boxes.xyxy[0][0])
                 boxHeight = int(validPairs[i][0].boxes.xyxy[0][3]) - int(validPairs[i][0].boxes.xyxy[0][1])
                 boxArea = boxWidth * boxHeight
@@ -74,21 +78,30 @@ class WasteExtraction:
                 resultsArray.append(allResults)
                 if boxArea > self.minBoundingVal:
                     self.minBoundingVal = boxArea
-                    biggestboxes = validResults[i]
-                    finalImages = validFrames[validFramesNumber]
                 validFramesNumber += 1
                 # Resets the minBoundingVal variable so it is ready for a new image segmentation. Also sets movement to tru to start the timer.
             self.minBoundingVal = 0
             sorted_results = sorted(resultsArray, key=lambda x: x[2], reverse=True)
-            top10 = sorted_results[:10]
-            for i in range(0,len(top10)):
+            top10 = sorted_results
+            for i in range(0, len(top10)):
                 variance_laplacian = cv2.Laplacian(top10[i][1], cv2.CV_64F).var()
                 if variance_laplacian > self.minBlurVal:
                     self.minBlurVal = variance_laplacian
                     biggestbox = top10[i][0]
+                    print("biggestbox: ", biggestbox.boxes.xyxy)
                     finalImage = top10[i][1]
             self.minBlurVal = 0
-            if finalImage is not None:
+            if self.imNum == 0:
+                self.prevImg = finalImage[int(biggestbox.boxes.xyxy[0][1]):int(biggestbox.boxes.xyxy[0][3]),
+                               int(biggestbox.boxes.xyxy[0][0]):int(biggestbox.boxes.xyxy[0][2])]
+            else:
+                hash1 = imagehash.average_hash(Image.fromarray(finalImage))
+                hash2 = imagehash.average_hash(Image.fromarray(self.prevImg))
+                self.hashVal = hash1 - hash2
+                print("hashVal: ", self.hashVal)
+                self.prevImg = finalImage[int(biggestbox.boxes.xyxy[0][1]):int(biggestbox.boxes.xyxy[0][3]),
+                               int(biggestbox.boxes.xyxy[0][0]):int(biggestbox.boxes.xyxy[0][2])]
+            if finalImage is not None and self.hashVal > 5:
                 cv2.rectangle(finalImage, (int(biggestbox.boxes.xyxy[0][0]), int(biggestbox.boxes.xyxy[0][1])),
                               (int(biggestbox.boxes.xyxy[0][2]), int(biggestbox.boxes.xyxy[0][3])), (0, 255, 0), thickness=2)
                 cv2.imwrite(f"testImages/{filename}" + str(self.imNum) + ".png", finalImage)
