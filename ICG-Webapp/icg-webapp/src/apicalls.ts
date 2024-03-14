@@ -184,6 +184,66 @@ export class WebICGApiClient implements IWebICGAPIClient {
     }
     return Promise.resolve<UserRegistry>(null as any);
   }
+  get_scoreboard(): Promise<UserRegistry[]> {
+    let url_ = this.baseUrl + "/getscoreboardinfo";
+    url_ = url_.replace(/[?&]$/, "");
+    
+    let options_: RequestInit = {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processGet_scoreboard(_response);
+    });
+  }
+  protected processGet_scoreboard(response: Response): Promise<UserRegistry[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach(
+        (value: any, key: any) => (_headers[key] = value)
+      );
+    }
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 =
+          _responseText === ""
+            ? null
+            : JSON.parse(_responseText, this.jsonParseReviver);
+        const userList: UserRegistry[] = [];
+        // Iterate over each JSON object in the list
+        for (const jsonObj of resultData200) {
+            // Extract username and points from JSON object
+            const username = jsonObj.user;
+            const points = jsonObj.points;
+            let data = {"userName": username, "points": points};
+            // Create a new User object and add it to the user list
+            const user = UserRegistry.fromJS(data);
+            userList.push(user);
+        }
+    
+        return userList;
+      });
+    } else if (status === 400) {
+      return response.text().then((_responseText) => {
+        return throwException("Not found", status, _responseText, _headers);
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          "An unexpected server error occurred.",
+          status,
+          _responseText,
+          _headers
+        );
+      });
+    }
+    return Promise.resolve<UserRegistry[]>(null as any);
+  }
 }
 
 export class LoginInstance implements ILoginInstance {

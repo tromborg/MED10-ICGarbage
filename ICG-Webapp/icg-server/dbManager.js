@@ -74,7 +74,41 @@ async function getUserStats(user_id){
 
 async function getScoreboardData(){
     // Return JS Object with all usernames and their total points, all from users table
-    
+    const dbInfo = {
+        user: settings.pgInfo.user,
+        host: settings.pgInfo.host,
+        database: settings.pgInfo.database,
+        password: settings.pgInfo.password,
+        port: settings.pgInfo.port,
+    }
+    const client = new Client(dbInfo);
+
+    try {
+        await client.connect();
+
+        const queryText = 'SELECT "username", "points" FROM users;';
+        const result = await client.query(queryText);
+
+        if (result.rows.length === 0) {
+            console.log("Cant find users");
+            throw new Error("Cant find any users")
+        }
+
+        const userList = result.rows.map(row => ({
+            user: row.username,
+            points: row.points
+          }));
+        
+
+        console.log(userList);
+        return userList
+
+    } catch (e){
+        console.log("Error in getUserStats: " + e);
+
+    } finally {
+        await client.end();
+    }
 }
 
 async function testConn(){
@@ -95,6 +129,6 @@ async function testConn(){
     await client.end()
 }
 
-module.exports = {createUser, testConn, checkLogin}
+module.exports = {createUser, testConn, checkLogin, getScoreboardData}
 
 

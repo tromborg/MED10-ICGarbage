@@ -45,3 +45,8 @@ app.get("/healthz", async (req, res) => {
   res.set("Content-Type", "text/html");
   res.status(200).send('{"status": "healthy"}');
 });
+
+app.get("/api/getscoreboardinfo", async (req, res) => {
+  let scoreBoardData = await dbManager.getScoreboardData();
+  res.status(200).send(scoreBoardData); 
+});
