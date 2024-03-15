@@ -187,7 +187,7 @@ export class WebICGApiClient implements IWebICGAPIClient {
   get_scoreboard(): Promise<UserRegistry[]> {
     let url_ = this.baseUrl + "/getscoreboardinfo";
     url_ = url_.replace(/[?&]$/, "");
-    
+
     let options_: RequestInit = {
       method: "GET",
       headers: {
@@ -217,15 +217,15 @@ export class WebICGApiClient implements IWebICGAPIClient {
         const userList: UserRegistry[] = [];
         // Iterate over each JSON object in the list
         for (const jsonObj of resultData200) {
-            // Extract username and points from JSON object
-            const username = jsonObj.user;
-            const points = jsonObj.points;
-            let data = {"userName": username, "points": points};
-            // Create a new User object and add it to the user list
-            const user = UserRegistry.fromJS(data);
-            userList.push(user);
+          // Extract username and points from JSON object
+          const username = jsonObj.user;
+          const points = jsonObj.points;
+          let data = { userName: username, points: points };
+          // Create a new User object and add it to the user list
+          const user = UserRegistry.fromJS(data);
+          userList.push(user);
         }
-    
+
         return userList;
       });
     } else if (status === 400) {
@@ -247,45 +247,44 @@ export class WebICGApiClient implements IWebICGAPIClient {
 }
 
 export class LoginInstance implements ILoginInstance {
-    userId?: string | undefined;
-    isLoggedIn?: boolean | undefined;
-    
-    constructor(data?: IUserRegistry) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property)) {
-                    (<any>this)[property] = (<any>data)[property];
-                }
-            }
-        }
-    }
+  userId?: string | undefined;
+  isLoggedIn?: boolean | undefined;
 
-    init(_data?: any) {
-        if (_data) {
-          this.userId = _data["userId"];
-          this.isLoggedIn = _data['isLoggedIn'];
+  constructor(data?: IUserRegistry) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) {
+          (<any>this)[property] = (<any>data)[property];
         }
+      }
     }
-    
-      static fromJS(data: any): LoginInstance {
-        data = typeof data === "object" ? data : {};
-        let result = new LoginInstance();
-        result.init(data);
-        return result;
-    }
-    
-      toJSON(data?: any) {
-        data = typeof data === "object" ? data : {};
-        data["userId"] = this.userId
-        return data;
-    }
+  }
 
+  init(_data?: any) {
+    if (_data) {
+      this.userId = _data["userId"];
+      this.isLoggedIn = _data["isLoggedIn"];
+    }
+  }
+
+  static fromJS(data: any): LoginInstance {
+    data = typeof data === "object" ? data : {};
+    let result = new LoginInstance();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === "object" ? data : {};
+    data["userId"] = this.userId;
+    return data;
+  }
 }
 
 export interface ILoginInstance {
-    userId?: string;
-    isLoggedIn?: boolean;
-  }
+  userId?: string;
+  isLoggedIn?: boolean;
+}
 
 export class UserRegistry implements IUserRegistry {
   userName?: string;
