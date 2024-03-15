@@ -19,7 +19,7 @@ import { FaUserAlt, FaLock } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import urls from "../urls";
-import { UserBody, UserService } from "../../models/UserService";
+import { UserBody, UserService } from "../../models/userService";
 import { AppDispatch } from "../../store/store";
 import { useDispatch } from "react-redux";
 import { setLogin } from "../../store/reducers/login";

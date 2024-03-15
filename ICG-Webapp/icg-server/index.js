@@ -48,5 +48,5 @@ app.get("/healthz", async (req, res) => {
 
 app.get("/api/getscoreboardinfo", async (req, res) => {
   let scoreBoardData = await dbManager.getScoreboardData();
-  res.status(200).send(scoreBoardData); 
+  res.status(200).send(scoreBoardData);
 });
