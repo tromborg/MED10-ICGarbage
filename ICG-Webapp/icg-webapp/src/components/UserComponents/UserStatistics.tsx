@@ -43,6 +43,7 @@ const UserStatistics: FunctionComponent = () => {
   const getTimeSeriesData = async () => {
     let userService = new UserService();
     let user = await userSessionDb.getUserFromSessionDb();
+    console.log("user: ");
     let timeSeriesData = await userService.GetTimeSeriesData(user.userId!);
     if (timeSeriesData !== null) {
       setTimeData(timeSeriesData);
@@ -53,7 +54,7 @@ const UserStatistics: FunctionComponent = () => {
 
   function filterDataByTime(timeRange: string) {
     const currentDate = new Date();
-    let dateRange;
+    let dateRange: Date | undefined;
 
     switch (timeRange) {
       case "Last Week":
@@ -74,8 +75,13 @@ const UserStatistics: FunctionComponent = () => {
     }
 
     return timeData?.filter((item) => {
-      const itemDate = new Date(item.timeStamp);
-      return itemDate >= dateRange && itemDate <= currentDate;
+      const itemDate = item.timeStamp ? new Date(item.timeStamp) : null;
+      return (
+        itemDate &&
+        dateRange &&
+        itemDate >= dateRange &&
+        itemDate <= currentDate
+      );
     });
   }
 
@@ -101,7 +107,9 @@ const UserStatistics: FunctionComponent = () => {
     getTimeSeriesData();
   }, []);
 
-  useEffect(() => {}, [timePeriod]);
+  useEffect(() => {
+    filterDataByTime(timePeriod);
+  }, [timePeriod]);
 
   return (
     <Flex width="100%" flexDirection="column">
