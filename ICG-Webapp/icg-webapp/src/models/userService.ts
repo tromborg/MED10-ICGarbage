@@ -1,4 +1,4 @@
-import { LoginInstance, UserRegistry } from "../apicalls";
+import { LoginInstance, TimeSeriesInstance, UserRegistry } from "../apicalls";
 import { ApiService } from "../services/ApiService";
 
 export type UserBody = {
@@ -6,6 +6,12 @@ export type UserBody = {
     email : string;
     password: string;
     points: number;
+}
+
+interface TimeSeriesData {
+    userId: string,
+    points: number,
+    timeStamp: Date
 }
 
 export class UserService  {
@@ -21,7 +27,7 @@ export class UserService  {
         const apiRes = await ApiService.client().post_new_user(newUser);
         console.log("resservice: " + apiRes);
         } catch (e) {
-            console.log("User error: " + e);
+            console.log("Userservice: " + e);
         }
     }
 
@@ -35,8 +41,23 @@ export class UserService  {
             return res
 
         } catch (e) {
-            console.log("User error: " + e);
+            console.log("Userservice: " + e);
             return new LoginInstance
         }
     }
+
+    async GetTimeSeriesData(userid : string) : Promise<TimeSeriesInstance[]>{
+        try {
+            let res = await ApiService.client().get_timeseriesdata(userid);
+            console.log(JSON.stringify(res));
+            res.sort((a, b) => a.timeStamp!.getTime() - b.timeStamp!.getTime());
+            
+            return res
+        } catch (e) {
+            console.log("Userservice error: " + e);
+            return Promise.resolve<TimeSeriesInstance[]>(null as any);
+        }
+    }
+
+    
 }

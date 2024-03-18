@@ -72,8 +72,48 @@ async function getUserStats(user_id){
     
 }
 
+async function getTimeSeriesData(userid){
+    const dbInfo = {
+        user: settings.pgInfo.user,
+        host: settings.pgInfo.host,
+        database: settings.pgInfo.database,
+        password: settings.pgInfo.password,
+        port: settings.pgInfo.port,
+    }
+    const client = new Client(dbInfo);
+
+    try {
+        await client.connect();
+
+        const queryText = 'SELECT * FROM videodata WHERE userid = $1;';
+        const results = await client.query(queryText, [userid]);
+
+        if (results.rows.length === 0) {
+            console.log("Cant find users");
+            throw new Error("Cant find any users")
+        }
+        
+        console.log("results length: " + results.rows.length);
+        const timeData = results.rows.map(row => ({
+            userId: row.userid,
+            points: row.points,
+            timeStamp: row.upload_date
+          }));
+        
+        
+        console.log("timeData: " + timeData);
+        return timeData
+
+    } catch (e){
+        console.log("Error in getUserStats: " + e);
+
+    } finally {
+        await client.end();
+    }
+}
+
+
 async function getScoreboardData(){
-    // Return JS Object with all usernames and their total points, all from users table
     const dbInfo = {
         user: settings.pgInfo.user,
         host: settings.pgInfo.host,
@@ -100,7 +140,7 @@ async function getScoreboardData(){
           }));
         
 
-        console.log(userList);
+        console.log("userlist: " + userList);
         return userList
 
     } catch (e){
@@ -129,6 +169,6 @@ async function testConn(){
     await client.end()
 }
 
-module.exports = {createUser, testConn, checkLogin, getScoreboardData}
+module.exports = {createUser, testConn, checkLogin, getScoreboardData, getTimeSeriesData}
 
 

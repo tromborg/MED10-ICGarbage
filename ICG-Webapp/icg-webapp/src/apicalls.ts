@@ -215,13 +215,10 @@ export class WebICGApiClient implements IWebICGAPIClient {
             ? null
             : JSON.parse(_responseText, this.jsonParseReviver);
         const userList: UserRegistry[] = [];
-        // Iterate over each JSON object in the list
         for (const jsonObj of resultData200) {
-          // Extract username and points from JSON object
           const username = jsonObj.user;
           const points = jsonObj.points;
           let data = { userName: username, points: points };
-          // Create a new User object and add it to the user list
           const user = UserRegistry.fromJS(data);
           userList.push(user);
         }
@@ -243,6 +240,122 @@ export class WebICGApiClient implements IWebICGAPIClient {
       });
     }
     return Promise.resolve<UserRegistry[]>(null as any);
+  }
+
+  get_timeseriesdata(userid: string): Promise<TimeSeriesInstance[]> {
+    let url_ = this.baseUrl + "/gettimeseriesdata";
+    url_ = url_.replace(/[?&]$/, "");
+    let body = `{"userid": "${userid}"}`; 
+    const content_ = JSON.stringify(JSON.parse(body));
+    console.log("_content: " + content_);
+    let options_: RequestInit = {
+      method: "POST",
+      body: content_,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processGet_timeseriesdata(_response);
+    });
+  }
+
+  protected processGet_timeseriesdata(response: Response): Promise<TimeSeriesInstance[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach(
+        (value: any, key: any) => (_headers[key] = value)
+      );
+    }
+    console.log("Status: " + status);
+    if (status === 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        console.log("statusdata: " + _responseText);
+        let resultData200 =
+          _responseText === ""
+            ? null
+            : JSON.parse(_responseText, this.jsonParseReviver);
+        const timeData: TimeSeriesInstance[] = [];
+        for (const jsonObj of resultData200) {
+          const userId = jsonObj.userId;
+          const points = jsonObj.points;
+          const timeStamp = jsonObj.timeStamp;
+          let data = { userId: userId, points: points, timeStamp: timeStamp };
+          console.log("restype: " + data);
+          console.log("resres: " + JSON.stringify(data))
+          const user = TimeSeriesInstance.fromJS(data);
+          timeData.push(user);
+        }
+
+        return timeData;
+      });
+    } else if (status === 400) {
+      return response.text().then((_responseText) => {
+        return throwException("Not found", status, _responseText, _headers);
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          "An unexpected server error occurred.",
+          status,
+          _responseText,
+          _headers
+        );
+      });
+    }
+    return Promise.resolve<TimeSeriesInstance[]>(null as any);
+  }
+}
+
+
+export interface ITimeSeriesInstance {
+  userId?: string;
+  points?: number;
+  timeStamp?: Date;
+
+}
+
+export class TimeSeriesInstance implements ITimeSeriesInstance {
+  userId?: string | undefined;
+  points?: number | undefined;
+  timeStamp?: Date | undefined;
+
+  constructor(data?: IUserRegistry) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) {
+          (<any>this)[property] = (<any>data)[property];
+        }
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.userId = _data["userId"];
+      this.points = _data["points"];
+      this.timeStamp = _data["timeStamp"];
+    }
+  }
+
+  static fromJS(data: any): TimeSeriesInstance {
+    data = typeof data === "object" ? data : {};
+    let result = new TimeSeriesInstance();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === "object" ? data : {};
+    data["userId"] = this.userId;
+    data["points"] = this.points;
+    data["timeStamp"] = this.timeStamp;
+    return data;
   }
 }
 

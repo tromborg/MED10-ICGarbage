@@ -139,3 +139,9 @@ ICGarbage/ICGWebAPI/testImages/
 ICG-Webapp/icg-server/settings.js
 ICG-Webapp/icg-webapp/.env
 ICG-Webapp/icg-server/node_modules/
+ICGarbage/.idea/ICGarbage.iml
+ICGWebAPI/.idea/.name
+ICGWebAPI/.idea/dataSources.xml
+ICGWebAPI/.idea/sqldialects.xml
+*.iml
+*.iml

@@ -50,3 +50,13 @@ app.get("/api/getscoreboardinfo", async (req, res) => {
   let scoreBoardData = await dbManager.getScoreboardData();
   res.status(200).send(scoreBoardData);
 });
+
+app.post("/api/gettimeseriesdata", jsonParser, async (req, res) => {
+  let body = JSON.parse(JSON.stringify(req.body));
+  console.log("id: " + body);
+  console.log("id1: " + JSON.stringify(body));
+  console.log("id2: " + JSON.stringify(req.body));
+  let timeSeriesData = await dbManager.getTimeSeriesData(body.userid);
+  console.log("id3: " + JSON.stringify(timeSeriesData));
+  res.status(200).send(timeSeriesData);
+})

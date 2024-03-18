@@ -1,7 +1,22 @@
 import { FunctionComponent } from "react";
-import {Container, Heading, TableContainer, Table, Thead, Tr, Th, Tbody, Td, Button} from '@chakra-ui/react';
+import {Container, Heading, TableContainer, Table, Thead, Tr, Th, Tbody, Td, Button, Box} from '@chakra-ui/react';
+import { UserService } from "../../models/UserService";
+import { userSessionDb } from "../../components/SessionDB";
 
 const UserOverview : FunctionComponent = () => {
+
+    const getTimeSeriesData = async () => {
+        let userService = new UserService();
+        let user = await userSessionDb.getUserFromSessionDb();
+        console.log("id: " + user.userId);
+        let timeSeriesData = await userService.GetTimeSeriesData(user.userId!);
+        if(timeSeriesData !== null){
+            console.log("Timedata res: " + timeSeriesData[0].timeStamp);
+            console.log("resdata: " + JSON.stringify(timeSeriesData));
+        } else {
+            console.log("Timeseries data is null")
+        }
+    }
 
     return (
         <Container>
@@ -24,6 +39,10 @@ const UserOverview : FunctionComponent = () => {
                     </Tbody>
                 </Table>
             </TableContainer>
+            <Button onClick={getTimeSeriesData}>
+            {" "}
+            TESETZ{" "}
+          </Button>
         </Container>
     )
 }
