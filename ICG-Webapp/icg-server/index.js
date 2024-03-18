@@ -59,4 +59,4 @@ app.post("/api/gettimeseriesdata", jsonParser, async (req, res) => {
   let timeSeriesData = await dbManager.getTimeSeriesData(body.userid);
   console.log("id3: " + JSON.stringify(timeSeriesData));
   res.status(200).send(timeSeriesData);
-})
+});

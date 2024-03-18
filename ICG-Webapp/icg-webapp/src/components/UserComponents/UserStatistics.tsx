@@ -1,11 +1,33 @@
 import { FunctionComponent, useEffect, useState } from "react";
-import { Container, Flex, Heading, Button } from "@chakra-ui/react";
+import {
+  Container,
+  Flex,
+  Heading,
+  Button,
+  Box,
+  Text,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  MenuItemOption,
+  MenuGroup,
+  MenuOptionGroup,
+  MenuDivider,
+} from "@chakra-ui/react";
 import { ApiService } from "../../services/ApiService";
 import { Chart } from "react-google-charts";
 import { IUserRegistry } from "../../apicalls";
+import { UserService } from "../../models/UserService";
+import { userSessionDb } from "../SessionDB";
+import { ITimeSeriesInstance } from "../../apicalls";
 
 const UserStatistics: FunctionComponent = () => {
   const [userData, setUserData] = useState<IUserRegistry[]>();
+  const [timeData, setTimeData] = useState<ITimeSeriesInstance[]>();
+  const [timePeriod, setTimePeriod] = useState<string>("Last Month");
+  const timePeriods = ["Last Week", "Last Month", "Last Year"];
+
   const colors = [
     "#d8f3dc",
     "#b7e4c7",
@@ -17,6 +39,45 @@ const UserStatistics: FunctionComponent = () => {
     "#1b4332",
     "#081c15",
   ];
+
+  const getTimeSeriesData = async () => {
+    let userService = new UserService();
+    let user = await userSessionDb.getUserFromSessionDb();
+    let timeSeriesData = await userService.GetTimeSeriesData(user.userId!);
+    if (timeSeriesData !== null) {
+      setTimeData(timeSeriesData);
+    } else {
+      console.log("Timeseries data is null");
+    }
+  };
+
+  function filterDataByTime(timeRange: string) {
+    const currentDate = new Date();
+    let dateRange;
+
+    switch (timeRange) {
+      case "Last Week":
+        dateRange = new Date(currentDate);
+        dateRange.setDate(dateRange.getDate() - 7);
+        break;
+      case "Last Month":
+        dateRange = new Date(currentDate);
+        dateRange.setMonth(dateRange.getMonth() - 1);
+        if (dateRange.getMonth() === currentDate.getMonth()) {
+          dateRange.setDate(0);
+        }
+        break;
+      case "Last Year":
+        dateRange = new Date(currentDate);
+        dateRange.setFullYear(dateRange.getFullYear() - 1);
+        break;
+    }
+
+    return timeData?.filter((item) => {
+      const itemDate = new Date(item.timeStamp);
+      return itemDate >= dateRange && itemDate <= currentDate;
+    });
+  }
 
   const handleGetScoreboard = async () => {
     const scoreboardData = await ApiService.client().get_scoreboard();
@@ -31,37 +92,70 @@ const UserStatistics: FunctionComponent = () => {
   };
 
   const options = {
-    title: "Top 10 users by points",
     hAxis: { title: "Username" },
     vAxis: { title: "Points", minValue: 0 },
   };
 
   useEffect(() => {
     handleGetScoreboard();
+    getTimeSeriesData();
   }, []);
 
+  useEffect(() => {}, [timePeriod]);
+
   return (
-    <Container>
+    <Flex width="100%" flexDirection="column">
       <Heading>Statistikker</Heading>
       {userData && (
-        <Flex>
-          <Chart
-            chartType="ColumnChart"
-            width="600px"
-            height="400px"
-            data={[
-              ["user", "Points", { role: "style" }],
-              ...userData.map((user, index) => [
-                user.userName,
-                user.points,
-                colors[index],
-              ]),
-            ]}
-            options={options}
-          />
+        <Flex width="100%">
+          <Box
+            backgroundColor="white"
+            width="50%"
+            height="100%"
+            padding="2%"
+            margin="10px"
+            borderRadius={5}
+            alignSelf="flex-start"
+          >
+            <Box display="flex" width="100%" justifyContent="center">
+              <Text fontSize={24}>Top 10 users by points</Text>
+            </Box>
+            <Menu>
+              <MenuButton>Time Period</MenuButton>
+              <MenuList>
+                {timePeriods.map((period) => (
+                  <MenuItem onClick={() => setTimePeriod(period)}>
+                    {period}
+                  </MenuItem>
+                ))}
+              </MenuList>
+            </Menu>
+            <Box>
+              <Chart
+                chartType="ColumnChart"
+                width="600px"
+                height="400px"
+                data={[
+                  ["user", "Points", { role: "style" }],
+                  ...userData.map((user, index) => [
+                    user.userName,
+                    user.points,
+                    colors[index],
+                  ]),
+                ]}
+                options={options}
+              />
+            </Box>
+          </Box>
+          <Box
+            backgroundColor="white"
+            width="50%"
+            margin="10px"
+            borderRadius={5}
+          ></Box>
         </Flex>
       )}
-    </Container>
+    </Flex>
   );
 };
 
