@@ -25,6 +25,8 @@ import { ITimeSeriesInstance } from "../../apicalls";
 const UserStatistics: FunctionComponent = () => {
   const [userData, setUserData] = useState<IUserRegistry[]>();
   const [timeData, setTimeData] = useState<ITimeSeriesInstance[]>();
+  const [filteredTimeData, setFilteredTimeData] =
+    useState<ITimeSeriesInstance[]>();
   const [timePeriod, setTimePeriod] = useState<string>("Last Month");
   const timePeriods = ["Last Week", "Last Month", "Last Year"];
 
@@ -47,8 +49,21 @@ const UserStatistics: FunctionComponent = () => {
     let timeSeriesData = await userService.GetTimeSeriesData(user.userId!);
     if (timeSeriesData !== null) {
       setTimeData(timeSeriesData);
+      setFilteredTimeData(timeSeriesData);
     } else {
       console.log("Timeseries data is null");
+    }
+  };
+
+  const handleGetScoreboard = async () => {
+    const scoreboardData = await ApiService.client().get_scoreboard();
+    if (scoreboardData) {
+      const sortedData = scoreboardData.slice().sort((a, b) => {
+        const pointsA = a.points || 0;
+        const pointsB = b.points || 0;
+        return pointsB - pointsA;
+      });
+      setUserData(sortedData);
     }
   };
 
@@ -85,20 +100,8 @@ const UserStatistics: FunctionComponent = () => {
     });
   }
 
-  const handleGetScoreboard = async () => {
-    const scoreboardData = await ApiService.client().get_scoreboard();
-    if (scoreboardData) {
-      const sortedData = scoreboardData.slice().sort((a, b) => {
-        const pointsA = a.points || 0;
-        const pointsB = b.points || 0;
-        return pointsB - pointsA;
-      });
-      setUserData(sortedData);
-    }
-  };
-
   const options = {
-    hAxis: { title: "Username" },
+    hAxis: { title: "Date" },
     vAxis: { title: "Points", minValue: 0 },
   };
 
@@ -108,13 +111,14 @@ const UserStatistics: FunctionComponent = () => {
   }, []);
 
   useEffect(() => {
-    filterDataByTime(timePeriod);
+    console.log("bruv");
+    setFilteredTimeData(filterDataByTime(timePeriod));
   }, [timePeriod]);
 
   return (
     <Flex width="100%" flexDirection="column">
       <Heading>Statistikker</Heading>
-      {userData && (
+      {filteredTimeData && (
         <Flex width="100%">
           <Box
             backgroundColor="white"
@@ -144,9 +148,9 @@ const UserStatistics: FunctionComponent = () => {
                 width="600px"
                 height="400px"
                 data={[
-                  ["user", "Points", { role: "style" }],
-                  ...userData.map((user, index) => [
-                    user.userName,
+                  ["Timestamp", "Points", { role: "style" }],
+                  ...filteredTimeData.map((user, index) => [
+                    user.timeStamp,
                     user.points,
                     colors[index],
                   ]),
