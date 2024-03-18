@@ -12,6 +12,7 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import Sidebar from "../components/UserComponents/UserSideBar";
 import UserOverview from "../components/UserComponents/UserOverview";
 import UserStatistics from "../components/UserComponents/UserStatistics";
+import GlobalLeaderboard from "../components/UserComponents/GlobalLeaderboard";
 
 const Users: FunctionComponent = () => {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -20,26 +21,29 @@ const Users: FunctionComponent = () => {
     setSelectedItem(item);
   };
 
-  let content: JSX.Element;
-  switch (selectedItem) {
-    case "useroverview":
-      content = <UserOverview />;
-      break;
-    case "userstatistics":
-      content = <UserStatistics />;
-      break;
-    default:
-      content = <UserOverview />;
-  }
+    let content: JSX.Element;
+    switch (selectedItem) {
+        case 'useroverview':
+            content = <UserOverview />;
+            break;
+        case 'userstatistics':
+            content = <UserStatistics />;
+            break;
+        case 'globalleaderboard':
+            content = <GlobalLeaderboard />;
+            break;
+        default:
+        content = <UserOverview />;
+    }
 
-  return (
-    <Flex width="100%">
-      <Sidebar onItemClick={handleItemClick} />
-      <Container maxW="87%" ml="250px" mt="20px">
-        {content}
-      </Container>
-    </Flex>
-  );
-};
+    return (
+        <Container>
+            <Sidebar onItemClick={handleItemClick}/>
+            <Container maxW="100%" mt="20px">
+                {content}
+            </Container>
+        </Container>
+    );
+}
 
 export default Users;

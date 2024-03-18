@@ -12,8 +12,6 @@ import {
   Button,
   Box,
 } from "@chakra-ui/react";
-import { UserService } from "../../models/UserService";
-import { userSessionDb } from "../../components/SessionDB";
 
 const UserOverview: FunctionComponent = () => {
   return (
