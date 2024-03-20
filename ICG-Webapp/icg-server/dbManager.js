@@ -98,7 +98,7 @@ async function getTimeSeriesData(userid){
             userId: row.userid,
             points: row.points,
             timeStamp: row.upload_date,
-            current_points: row.current_points
+            currentPoints: row.current_points
           }));
         
         
