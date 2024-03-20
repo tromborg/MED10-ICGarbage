@@ -43,8 +43,8 @@ class ICGAnalysis:
             ret, frame = cap.read()
             # cv2.imshow('current', frame)
             if type(frame) == type(None):
-                self.update_points(user_id=userid, points=img_points)
                 self.update_videodata(user_id=userid, videoid=filename, points=img_points)
+                self.update_points(user_id=userid, points=img_points)
                 print("ICG analysis complete.")
                 cap.release()
             left, right = self.getROI(frame)
@@ -104,9 +104,14 @@ class ICGAnalysis:
             # Create a cursor object using the cursor() method
             cursor = connection.cursor()
 
+            select_query = "SELECT points FROM users WHERE userid = %s"
+            cursor.execute(select_query, (user_id,))
+            current_total_points = cursor.fetchone()[0]
+            new_current_points = current_total_points + points
+
             user_id = uuid.UUID(user_id)
             # Insert extraction summary
-            insert_query = f"INSERT INTO videodata(userid, videoid, points) VALUES('{str(user_id)}', '{videoid}', {points})"
+            insert_query = f"INSERT INTO videodata(userid, videoid, points, current_points) VALUES('{str(user_id)}', '{videoid}', {points}, '{new_current_points}')"
             cursor.execute(insert_query)
 
             # Commit the transaction

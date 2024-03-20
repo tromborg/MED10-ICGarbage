@@ -285,7 +285,8 @@ export class WebICGApiClient implements IWebICGAPIClient {
           const userId = jsonObj.userId;
           const points = jsonObj.points;
           const timeStamp = jsonObj.timeStamp;
-          let data = { userId: userId, points: points, timeStamp: timeStamp };
+          const currentPoints = jsonObj.currentPoints;
+          let data = { userId: userId, points: points, timeStamp: timeStamp, currentPoints: currentPoints };
           console.log("restype: " + data);
           console.log("resres: " + JSON.stringify(data))
           const user = TimeSeriesInstance.fromJS(data);
@@ -317,13 +318,14 @@ export interface ITimeSeriesInstance {
   userId?: string;
   points?: number;
   timeStamp?: Date;
-
+  currentPoints?: number
 }
 
 export class TimeSeriesInstance implements ITimeSeriesInstance {
   userId?: string | undefined;
   points?: number | undefined;
   timeStamp?: Date | undefined;
+  currentPoints?: number | undefined;
 
   constructor(data?: IUserRegistry) {
     if (data) {
@@ -340,6 +342,7 @@ export class TimeSeriesInstance implements ITimeSeriesInstance {
       this.userId = _data["userId"];
       this.points = _data["points"];
       this.timeStamp = _data["timeStamp"];
+      this.currentPoints = _data["currentPoints"]
     }
   }
 
@@ -355,6 +358,7 @@ export class TimeSeriesInstance implements ITimeSeriesInstance {
     data["userId"] = this.userId;
     data["points"] = this.points;
     data["timeStamp"] = this.timeStamp;
+    data["currentPoints"] = this.currentPoints;
     return data;
   }
 }

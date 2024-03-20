@@ -20,6 +20,7 @@ class WasteExtraction:
         self.imNum = 0
         self.minBoundingVal = 0
         self.minBlurVal = 0
+        self.hashVal = 0
 
 
     def getROI(self, currentFrame):
@@ -101,7 +102,7 @@ class WasteExtraction:
                 print("hashVal: ", self.hashVal)
                 self.prevImg = finalImage[int(biggestbox.boxes.xyxy[0][1]):int(biggestbox.boxes.xyxy[0][3]),
                                int(biggestbox.boxes.xyxy[0][0]):int(biggestbox.boxes.xyxy[0][2])]
-            if finalImage is not None and self.hashVal > 5:
+            if finalImage is not None and (self.hashVal > 5 or self.imNum == 0):
                 cv2.rectangle(finalImage, (int(biggestbox.boxes.xyxy[0][0]), int(biggestbox.boxes.xyxy[0][1])),
                               (int(biggestbox.boxes.xyxy[0][2]), int(biggestbox.boxes.xyxy[0][3])), (0, 255, 0), thickness=2)
                 cv2.imwrite(f"testImages/{filename}" + str(self.imNum) + ".png", finalImage)

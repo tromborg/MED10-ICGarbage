@@ -97,7 +97,8 @@ async function getTimeSeriesData(userid){
         const timeData = results.rows.map(row => ({
             userId: row.userid,
             points: row.points,
-            timeStamp: row.upload_date
+            timeStamp: row.upload_date,
+            current_points: row.current_points
           }));
         
         
