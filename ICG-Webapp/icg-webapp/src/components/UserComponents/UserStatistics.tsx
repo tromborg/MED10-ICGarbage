@@ -19,7 +19,7 @@ import {
 import { ApiService } from "../../services/ApiService";
 import { Chart } from "react-google-charts";
 import { IUserRegistry } from "../../apicalls";
-import { UserService } from "../../models/UserService";
+import { UserService } from "../../models/userService";
 import { userSessionDb } from "../SessionDB";
 import { ITimeSeriesInstance } from "../../apicalls";
 import { ChevronDownIcon } from "@chakra-ui/icons";
@@ -27,22 +27,11 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 const UserStatistics: FunctionComponent = () => {
   const [userData, setUserData] = useState<IUserRegistry[]>();
   const [timeData, setTimeData] = useState<ITimeSeriesInstance[]>();
+  const [reverse, setReverse] = useState<ITimeSeriesInstance[]>();
   const [filteredTimeData, setFilteredTimeData] =
     useState<ITimeSeriesInstance[]>();
   const [timePeriod, setTimePeriod] = useState<string>("Last Month");
   const timePeriods = ["Last Week", "Last Month", "Last Year"];
-
-  const colors = [
-    "#d8f3dc",
-    "#b7e4c7",
-    "#95d5b2",
-    "#74c69d",
-    "#52b788",
-    "#40916c",
-    "#2d6a4f",
-    "#1b4332",
-    "#081c15",
-  ];
 
   const getTimeSeriesData = async () => {
     let userService = new UserService();
@@ -112,6 +101,11 @@ const UserStatistics: FunctionComponent = () => {
   const options = {
     hAxis: { title: "Date" },
     vAxis: { title: "Points", minValue: 0 },
+    animation: {
+      startup: true,
+      easing: "linear",
+      duration: 200,
+    },
   };
 
   function formatDate(timestamp: Date) {
@@ -129,11 +123,16 @@ const UserStatistics: FunctionComponent = () => {
 
   useEffect(() => {
     setFilteredTimeData(filterDataByTime(timePeriod));
+    if (filteredTimeData) {
+      console.log("yoyoermyoprem", filteredTimeData[0].currentPoints);
+    }
   }, [timePeriod, timeData]);
 
   return (
     <Flex width="100%" flexDirection="column">
-      <Heading>Statistikker</Heading>
+      <Box m="10px" alignSelf="center">
+        <Heading alignSelf="center">Statistics</Heading>
+      </Box>
       {filteredTimeData && (
         <Flex width="100%">
           <Box
@@ -144,8 +143,8 @@ const UserStatistics: FunctionComponent = () => {
             pr="2%"
             pb="2%"
             margin="10px"
-            borderRadius={5}
-            alignSelf="flex-start"
+            borderRadius={10}
+            borderWidth="1px"
           >
             <Box
               display="flex"
@@ -157,7 +156,12 @@ const UserStatistics: FunctionComponent = () => {
               <Text fontSize={24}>{timePeriod}s point progress</Text>
             </Box>
             <Divider />
-            <Box mt="10px" width="100%" justifyContent="flex-end">
+            <Box
+              display="flex"
+              mt="10px"
+              width="100%"
+              justifyContent="flex-end"
+            >
               <Menu>
                 <MenuButton
                   as={Button}
@@ -185,7 +189,7 @@ const UserStatistics: FunctionComponent = () => {
                   ...filteredTimeData.map((user, index) => [
                     user.timeStamp ? formatDate(user.timeStamp) : "",
                     user.points,
-                    colors[index],
+                    "#40916c",
                   ]),
                 ]}
                 options={options}
@@ -195,9 +199,32 @@ const UserStatistics: FunctionComponent = () => {
           <Box
             backgroundColor="white"
             width="50%"
+            height="100%"
+            pl="2%"
+            pr="2%"
+            pb="2%"
             margin="10px"
-            borderRadius={5}
-          ></Box>
+            borderRadius={10}
+            borderWidth="1px"
+          >
+            <Chart
+              chartType="Line"
+              width="600px"
+              height="400px"
+              data={[
+                ["Timestamp", "Points", { role: "style" }],
+                ...filteredTimeData
+                  .slice()
+                  .reverse()
+                  .map((user, index) => [
+                    user.timeStamp ? formatDate(user.timeStamp) : "",
+                    user.currentPoints,
+                    "#40916c",
+                  ]),
+              ]}
+              options={options}
+            />
+          </Box>
         </Flex>
       )}
     </Flex>
