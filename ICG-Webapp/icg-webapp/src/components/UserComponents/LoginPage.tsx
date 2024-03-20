@@ -24,6 +24,7 @@ import { AppDispatch } from "../../store/store";
 import { useDispatch } from "react-redux";
 import { setLogin } from "../../store/reducers/login";
 import { userSessionDb } from "../../components/SessionDB";
+import { setUserId } from "../../store/reducers/userid";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -58,6 +59,7 @@ const LoginPage: FunctionComponent = () => {
       console.log(`userid: ${res.userid}`);
       console.log(`isloggedin: ${res.isLoggedIn === true}`);
       loginDispatch(setLogin(true));
+      loginDispatch(setUserId(res.userid));
       await userSessionDb.addUser(
         res.userid as string,
         res.isLoggedIn,

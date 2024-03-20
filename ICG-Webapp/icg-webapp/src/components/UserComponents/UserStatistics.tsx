@@ -10,6 +10,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Divider,
   MenuItemOption,
   MenuGroup,
   MenuOptionGroup,
@@ -21,6 +22,7 @@ import { IUserRegistry } from "../../apicalls";
 import { UserService } from "../../models/UserService";
 import { userSessionDb } from "../SessionDB";
 import { ITimeSeriesInstance } from "../../apicalls";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 const UserStatistics: FunctionComponent = () => {
   const [userData, setUserData] = useState<IUserRegistry[]>();
@@ -49,7 +51,6 @@ const UserStatistics: FunctionComponent = () => {
     let timeSeriesData = await userService.GetTimeSeriesData(user.userId!);
     if (timeSeriesData !== null) {
       setTimeData(timeSeriesData);
-      setFilteredTimeData(timeSeriesData);
     } else {
       console.log("Timeseries data is null");
     }
@@ -89,7 +90,7 @@ const UserStatistics: FunctionComponent = () => {
         break;
     }
 
-    return timeData?.filter((item) => {
+    const filteredData = timeData?.filter((item) => {
       const itemDate = item.timeStamp ? new Date(item.timeStamp) : null;
       return (
         itemDate &&
@@ -98,6 +99,14 @@ const UserStatistics: FunctionComponent = () => {
         itemDate <= currentDate
       );
     });
+
+    const sortedData = filteredData?.sort((a, b) => {
+      const dateA = new Date(a.timeStamp || 0);
+      const dateB = new Date(b.timeStamp || 0);
+      return dateB.getTime() - dateA.getTime();
+    });
+
+    return sortedData;
   }
 
   const options = {
@@ -105,15 +114,22 @@ const UserStatistics: FunctionComponent = () => {
     vAxis: { title: "Points", minValue: 0 },
   };
 
+  function formatDate(timestamp: Date) {
+    const date = new Date(timestamp);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  }
+
   useEffect(() => {
     handleGetScoreboard();
     getTimeSeriesData();
   }, []);
 
   useEffect(() => {
-    console.log("bruv");
     setFilteredTimeData(filterDataByTime(timePeriod));
-  }, [timePeriod]);
+  }, [timePeriod, timeData]);
 
   return (
     <Flex width="100%" flexDirection="column">
@@ -124,24 +140,41 @@ const UserStatistics: FunctionComponent = () => {
             backgroundColor="white"
             width="50%"
             height="100%"
-            padding="2%"
+            pl="2%"
+            pr="2%"
+            pb="2%"
             margin="10px"
             borderRadius={5}
             alignSelf="flex-start"
           >
-            <Box display="flex" width="100%" justifyContent="center">
-              <Text fontSize={24}>Top 10 users by points</Text>
+            <Box
+              display="flex"
+              width="100%"
+              justifyContent="center"
+              alignItems="center"
+              height="60px"
+            >
+              <Text fontSize={24}>{timePeriod}s point progress</Text>
             </Box>
-            <Menu>
-              <MenuButton>Time Period</MenuButton>
-              <MenuList>
-                {timePeriods.map((period) => (
-                  <MenuItem onClick={() => setTimePeriod(period)}>
-                    {period}
-                  </MenuItem>
-                ))}
-              </MenuList>
-            </Menu>
+            <Divider />
+            <Box mt="10px" width="100%" justifyContent="flex-end">
+              <Menu>
+                <MenuButton
+                  as={Button}
+                  variant="outline"
+                  rightIcon={<ChevronDownIcon />}
+                >
+                  Time Period
+                </MenuButton>
+                <MenuList>
+                  {timePeriods.map((period) => (
+                    <MenuItem onClick={() => setTimePeriod(period)}>
+                      {period}
+                    </MenuItem>
+                  ))}
+                </MenuList>
+              </Menu>
+            </Box>
             <Box>
               <Chart
                 chartType="ColumnChart"
@@ -150,7 +183,7 @@ const UserStatistics: FunctionComponent = () => {
                 data={[
                   ["Timestamp", "Points", { role: "style" }],
                   ...filteredTimeData.map((user, index) => [
-                    user.timeStamp,
+                    user.timeStamp ? formatDate(user.timeStamp) : "",
                     user.points,
                     colors[index],
                   ]),
