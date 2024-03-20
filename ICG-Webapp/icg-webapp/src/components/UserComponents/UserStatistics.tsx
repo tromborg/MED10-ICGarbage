@@ -19,7 +19,7 @@ import {
 import { ApiService } from "../../services/ApiService";
 import { Chart } from "react-google-charts";
 import { IUserRegistry } from "../../apicalls";
-import { UserService } from "../../models/UserService";
+import { UserService } from "../../models/userService";
 import { userSessionDb } from "../SessionDB";
 import { ITimeSeriesInstance } from "../../apicalls";
 import { ChevronDownIcon } from "@chakra-ui/icons";
@@ -30,8 +30,11 @@ const UserStatistics: FunctionComponent = () => {
   const [reverse, setReverse] = useState<ITimeSeriesInstance[]>();
   const [filteredTimeData, setFilteredTimeData] =
     useState<ITimeSeriesInstance[]>();
+  const [filteredTimeDataLine, setFilteredTimeDataLine] =
+    useState<ITimeSeriesInstance[]>();
   const [timePeriod, setTimePeriod] = useState<string>("Last Month");
-  const timePeriods = ["Last Week", "Last Month", "Last Year"];
+  const [timePeriodLine, setTimePeriodLine] = useState<string>("Last Month");
+  const timePeriods = ["Last Week", "Last Month", "Last Year", "All Time"];
 
   const getTimeSeriesData = async () => {
     let userService = new UserService();
@@ -76,6 +79,10 @@ const UserStatistics: FunctionComponent = () => {
       case "Last Year":
         dateRange = new Date(currentDate);
         dateRange.setFullYear(dateRange.getFullYear() - 1);
+        break;
+      case "All Time":
+        dateRange = new Date(currentDate);
+        dateRange.setFullYear(dateRange.getFullYear() - 10);
         break;
     }
 
@@ -123,22 +130,23 @@ const UserStatistics: FunctionComponent = () => {
 
   useEffect(() => {
     setFilteredTimeData(filterDataByTime(timePeriod));
-    if (filteredTimeData) {
-      console.log("yoyoermyoprem", filteredTimeData[0].currentPoints);
-    }
   }, [timePeriod, timeData]);
+
+  useEffect(() => {
+    setFilteredTimeDataLine(filterDataByTime(timePeriodLine));
+  }, [timePeriodLine, timeData]);
 
   return (
     <Flex width="100%" flexDirection="column">
       <Box m="10px" alignSelf="center">
         <Heading alignSelf="center">Statistics</Heading>
       </Box>
-      {filteredTimeData && (
+      {filteredTimeData && filteredTimeDataLine && (
         <Flex width="100%">
           <Box
             backgroundColor="white"
             width="50%"
-            height="100%"
+            height="550px"
             pl="2%"
             pr="2%"
             pb="2%"
@@ -153,7 +161,7 @@ const UserStatistics: FunctionComponent = () => {
               alignItems="center"
               height="60px"
             >
-              <Text fontSize={24}>{timePeriod}s point progress</Text>
+              <Text fontSize={24}>{timePeriod}s waste points progress</Text>
             </Box>
             <Divider />
             <Box
@@ -199,7 +207,7 @@ const UserStatistics: FunctionComponent = () => {
           <Box
             backgroundColor="white"
             width="50%"
-            height="100%"
+            height="550px"
             pl="2%"
             pr="2%"
             pb="2%"
@@ -207,23 +215,58 @@ const UserStatistics: FunctionComponent = () => {
             borderRadius={10}
             borderWidth="1px"
           >
-            <Chart
-              chartType="Line"
-              width="600px"
-              height="400px"
-              data={[
-                ["Timestamp", "Points", { role: "style" }],
-                ...filteredTimeData
-                  .slice()
-                  .reverse()
-                  .map((user, index) => [
-                    user.timeStamp ? formatDate(user.timeStamp) : "",
-                    user.currentPoints,
-                    "#40916c",
-                  ]),
-              ]}
-              options={options}
-            />
+            <Box
+              display="flex"
+              width="100%"
+              justifyContent="center"
+              alignItems="center"
+              height="60px"
+            >
+              <Text fontSize={24}>Waste points balance through time</Text>
+            </Box>
+            <Divider />
+            <Box
+              display="flex"
+              mt="10px"
+              width="100%"
+              justifyContent="flex-end"
+            >
+              <Menu>
+                <MenuButton
+                  as={Button}
+                  variant="outline"
+                  rightIcon={<ChevronDownIcon />}
+                >
+                  Time Period
+                </MenuButton>
+                <MenuList>
+                  {timePeriods.map((period) => (
+                    <MenuItem onClick={() => setTimePeriodLine(period)}>
+                      {period}
+                    </MenuItem>
+                  ))}
+                </MenuList>
+              </Menu>
+            </Box>
+            <Box display="flex" justifyContent="center" alignItems="center">
+              <Chart
+                chartType="Line"
+                width="600px"
+                height="400px"
+                data={[
+                  ["Timestamp", "Points", { role: "style" }],
+                  ...filteredTimeDataLine
+                    .slice()
+                    .reverse()
+                    .map((user, index) => [
+                      user.timeStamp ? formatDate(user.timeStamp) : "",
+                      user.currentPoints,
+                      "#40916c",
+                    ]),
+                ]}
+                options={options}
+              />
+            </Box>
           </Box>
         </Flex>
       )}
