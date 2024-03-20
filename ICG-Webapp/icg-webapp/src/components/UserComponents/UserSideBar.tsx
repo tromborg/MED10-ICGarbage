@@ -14,8 +14,6 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
       w="13%"
       h="100vh"
       position="fixed"
-      left="0"
-      top="0"
       p="4"
     >
       <Flex align="center" mb="4">
