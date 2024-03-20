@@ -218,7 +218,8 @@ export class WebICGApiClient implements IWebICGAPIClient {
         for (const jsonObj of resultData200) {
           const username = jsonObj.user;
           const points = jsonObj.points;
-          let data = { userName: username, points: points };
+          const userid = jsonObj.userid;
+          let data = { userName: username, userid: userid, points: points };
           const user = UserRegistry.fromJS(data);
           userList.push(user);
         }
@@ -282,11 +283,11 @@ export class WebICGApiClient implements IWebICGAPIClient {
             : JSON.parse(_responseText, this.jsonParseReviver);
         const timeData: TimeSeriesInstance[] = [];
         for (const jsonObj of resultData200) {
-          const userId = jsonObj.userId;
+          const userid = jsonObj.userid;
           const points = jsonObj.points;
           const timeStamp = jsonObj.timeStamp;
           const currentPoints = jsonObj.currentPoints;
-          let data = { userId: userId, points: points, timeStamp: timeStamp, currentPoints: currentPoints };
+          let data = { userid: userid, points: points, timeStamp: timeStamp, currentPoints: currentPoints };
           console.log("restype: " + data);
           console.log("resres: " + JSON.stringify(data))
           const user = TimeSeriesInstance.fromJS(data);
@@ -315,14 +316,14 @@ export class WebICGApiClient implements IWebICGAPIClient {
 
 
 export interface ITimeSeriesInstance {
-  userId?: string;
+  userid?: string;
   points?: number;
   timeStamp?: Date;
   currentPoints?: number
 }
 
 export class TimeSeriesInstance implements ITimeSeriesInstance {
-  userId?: string | undefined;
+  userid?: string | undefined;
   points?: number | undefined;
   timeStamp?: Date | undefined;
   currentPoints?: number | undefined;
@@ -339,7 +340,7 @@ export class TimeSeriesInstance implements ITimeSeriesInstance {
 
   init(_data?: any) {
     if (_data) {
-      this.userId = _data["userId"];
+      this.userid = _data["userid"];
       this.points = _data["points"];
       this.timeStamp = _data["timeStamp"];
       this.currentPoints = _data["currentPoints"]
@@ -355,7 +356,7 @@ export class TimeSeriesInstance implements ITimeSeriesInstance {
 
   toJSON(data?: any) {
     data = typeof data === "object" ? data : {};
-    data["userId"] = this.userId;
+    data["userid"] = this.userid;
     data["points"] = this.points;
     data["timeStamp"] = this.timeStamp;
     data["currentPoints"] = this.currentPoints;
@@ -364,7 +365,7 @@ export class TimeSeriesInstance implements ITimeSeriesInstance {
 }
 
 export class LoginInstance implements ILoginInstance {
-  userId?: string | undefined;
+  userid?: string | undefined;
   isLoggedIn?: boolean | undefined;
 
   constructor(data?: IUserRegistry) {
@@ -379,7 +380,7 @@ export class LoginInstance implements ILoginInstance {
 
   init(_data?: any) {
     if (_data) {
-      this.userId = _data["userId"];
+      this.userid = _data["userid"];
       this.isLoggedIn = _data["isLoggedIn"];
     }
   }
@@ -393,17 +394,18 @@ export class LoginInstance implements ILoginInstance {
 
   toJSON(data?: any) {
     data = typeof data === "object" ? data : {};
-    data["userId"] = this.userId;
+    data["userid"] = this.userid;
     return data;
   }
 }
 
 export interface ILoginInstance {
-  userId?: string;
+  userid?: string;
   isLoggedIn?: boolean;
 }
 
 export class UserRegistry implements IUserRegistry {
+  userid?: string;
   userName?: string;
   email?: string;
   password?: string;
@@ -421,6 +423,7 @@ export class UserRegistry implements IUserRegistry {
 
   init(_data?: any) {
     if (_data) {
+      this.userid = _data["userid"]
       this.userName = _data["userName"];
       this.email = _data["email"];
       this.password = _data["password"];
@@ -437,6 +440,7 @@ export class UserRegistry implements IUserRegistry {
 
   toJSON(data?: any) {
     data = typeof data === "object" ? data : {};
+    data["userid"] = this.userid;
     data["userName"] = this.userName;
     data["email"] = this.email;
     data["password"] = this.password;
@@ -446,6 +450,7 @@ export class UserRegistry implements IUserRegistry {
 }
 
 export interface IUserRegistry {
+  userid?: string;
   userName?: string;
   email?: string;
   password?: string;

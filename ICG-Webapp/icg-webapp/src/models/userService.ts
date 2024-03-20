@@ -9,7 +9,7 @@ export type UserBody = {
 };
 
 interface TimeSeriesData {
-  userId: string;
+  userid: string;
   points: number;
   timeStamp: Date;
 }

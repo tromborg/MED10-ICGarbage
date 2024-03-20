@@ -55,11 +55,11 @@ const LoginPage: FunctionComponent = () => {
     navigate(urls.home);
     console.log("resw: " + res);
     if (res.isLoggedIn === true) {
-      console.log(`userid: ${res.userId}`);
+      console.log(`userid: ${res.userid}`);
       console.log(`isloggedin: ${res.isLoggedIn === true}`);
       loginDispatch(setLogin(true));
       await userSessionDb.addUser(
-        res.userId as string,
+        res.userid as string,
         res.isLoggedIn,
         new Date().toDateString()
       );

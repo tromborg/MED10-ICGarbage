@@ -1,11 +1,14 @@
-import { Container, Flex, TableContainer, Table, Thead, Tr, Th, Tbody, Td, VStack } from "@chakra-ui/react";
+import { Container, Flex, TableContainer, Table, Thead, Tr, Th, Tbody, Td, VStack, ResponsiveValue, color } from "@chakra-ui/react";
 import { FunctionComponent, useState, useEffect } from "react";
-import { IUserRegistry } from "../../apicalls";
+import { IUserRegistry, UserRegistry } from "../../apicalls";
 import { ApiService } from "../../services/ApiService";
+import themes from '../../design/themes';
+import { userSessionDb } from '../SessionDB';
+import { once } from "events";
 
 const GlobalLeaderboard : FunctionComponent = () => {
     const [userData, setUserData] = useState<IUserRegistry[]>();
-
+    const [isFetchDone, setIsFetchDone] = useState<Boolean>(false);
     const handleGetScoreboard = async () => {
         const scoreboardData = await ApiService.client().get_scoreboard();
         if (scoreboardData) {
@@ -15,18 +18,22 @@ const GlobalLeaderboard : FunctionComponent = () => {
             return pointsB - pointsA;
         });
         setUserData(sortedData);
+        setIsFetchDone(true)
         }
     };
 
+
     useEffect(() => {
-        handleGetScoreboard();
+        if (isFetchDone === false){
+            handleGetScoreboard();
+        }
     }, []);
 
     return (
         <Container width={"100%"}>
             
                 <TableContainer >
-                    <Table variant="striped" size="l">
+                    <Table variant="simple" size="l">
                     <Thead>
                         <Tr>
                             <Th textAlign={"center"}>Bruger</Th>
@@ -35,8 +42,16 @@ const GlobalLeaderboard : FunctionComponent = () => {
                     </Thead>
                     <Tbody>
                         {userData?.map((user) => {
+                            let rowColour = themes.primaryColours.white;
+                            userSessionDb.getUserFromSessionDb().then((usersesh)=>{
+                                if (user.userid === usersesh.userId){
+                                    rowColour = themes.primaryColours.lightGreen;
+                                }
+                            });
+                            
+                            
                             return (
-                                <Tr>
+                                <Tr backgroundColor={rowColour}>
                                     <Td textAlign={"center"}>
                                         {user.userName}
                                     </Td>

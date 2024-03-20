@@ -53,7 +53,7 @@ async function checkLogin(usrname, psswrd) {
         const useridQuery = 'SELECT userid FROM users WHERE username = $1';
         const resultId = await client.query(useridQuery, [usrname]);
         const userid = resultId.rows[0].userid;
-        let loginInstance = {"userId":`${userid}`, "isLoggedIn": psswrd === storedPassword}
+        let loginInstance = {"userid":`${userid}`, "isLoggedIn": psswrd === storedPassword}
         return loginInstance;
     } catch (error) {
         console.error('Error checking user and password:', error);
@@ -127,7 +127,7 @@ async function getScoreboardData(){
     try {
         await client.connect();
 
-        const queryText = 'SELECT "username", "points" FROM users;';
+        const queryText = 'SELECT "username", "userid", "points" FROM users;';
         const result = await client.query(queryText);
 
         if (result.rows.length === 0) {
@@ -136,12 +136,13 @@ async function getScoreboardData(){
         }
 
         const userList = result.rows.map(row => ({
+            userid: row.userid,
             user: row.username,
             points: row.points
           }));
         
 
-        console.log("userlist: " + userList);
+        console.log("userlist: " + JSON.stringify(userList));
         return userList
 
     } catch (e){

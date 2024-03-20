@@ -2,7 +2,7 @@ const primaryColours = {
     darkGreen: '#255f45',
     lightGreen: '#5EBC67',
     background: '#E3FBDE',
-    white: '#FCF9F5'
+    white: '#FAFFFA'
 }
 
 const adobePalette = {
