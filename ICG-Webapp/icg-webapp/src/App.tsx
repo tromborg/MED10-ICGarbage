@@ -37,7 +37,6 @@ const App: FunctionComponent = () => {
         <Route path="/" element={<RootLayout />}>
           <Route index element={<Home />} />
           <Route path="about" element={<About />} />
-          <Route path="users" element={<Users />} />
           <Route path="login" element={<LoginPage />} />
           <Route path="signup" element={<SignupPage />} />
         </Route>
