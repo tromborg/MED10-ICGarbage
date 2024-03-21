@@ -95,7 +95,7 @@ const ShopPage = () => {
   const [selectedCard, setSelectedCard] = useState<Card | undefined>();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [userPoints, setUserPoints] = useState<UserRegistry[]>();
-  const [cardWidth, setCardWidth] = useState<string>();
+  const [cardWidth, setCardWidth] = useState<string>("30%");
 
   const getUserBalance = async () => {
     let user = await userSessionDb.getUserFromSessionDb();
