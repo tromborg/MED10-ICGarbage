@@ -10,15 +10,11 @@ import {
   InputLeftElement,
   chakra,
   Box,
-  Link,
   Avatar,
   FormControl,
-  FormHelperText,
   InputRightElement,
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
-import { ApiService } from "../../services/ApiService";
-import { UserRegistry } from "../../apicalls";
 import { useNavigate } from "react-router-dom";
 import urls from "../urls";
 import { UserBody, UserService } from "../../models/UserService";

@@ -1,15 +1,19 @@
 import { FunctionComponent, useState } from "react";
-import { AppDispatch, RootState } from "../store/store";
-import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { useSelector } from "react-redux";
 import {Card, CardBody, Text, Button,  Progress, Container} from "@chakra-ui/react";
 import { userSessionDb } from "../components/SessionDB";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import urls from "./urls";
+
 const UploadComponent: FunctionComponent = () => {
     const isLoggedIn = useSelector((state: RootState) => state.login.isLoggedIn);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [chunkNum, setChunkNum] = useState(0);
     const [totalChunkNum, setTotalChunkNum] = useState(0);
     const [loadingValue, setLoadingValue] = useState(0);
+    const navigate = useNavigate();
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         if (event.target.files && event.target.files.length > 0) {
           setSelectedFile(event.target.files[0]);
@@ -96,7 +100,7 @@ const UploadComponent: FunctionComponent = () => {
                         <CardBody>
                             <Text>Login to upload videos:</Text>
                             <Button onClick={()=>{
-                                console.log("test");
+                                navigate(urls.login)
                             }}>
                                 Login
                             </Button>

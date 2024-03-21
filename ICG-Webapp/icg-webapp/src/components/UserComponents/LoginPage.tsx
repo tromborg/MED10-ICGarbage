@@ -47,17 +47,12 @@ const LoginPage: FunctionComponent = () => {
   const navigate = useNavigate();
   const handleShowClick = () => setShowPassword(!showPassword);
   const loginDispatch = useDispatch<AppDispatch>();
-
   const handleLogin = async (data: ILoginForm) => {
-    console.log("USERDATA: " + data);
     let userService = new UserService();
     let res = await userService.CheckUserLogin(data as UserBody);
 
     navigate(urls.home);
-    console.log("resw: " + res);
     if (res.isLoggedIn === true) {
-      console.log(`userid: ${res.userid}`);
-      console.log(`isloggedin: ${res.isLoggedIn === true}`);
       loginDispatch(setLogin(true));
       loginDispatch(setUserId(res.userid));
       await userSessionDb.addUser(
@@ -65,23 +60,15 @@ const LoginPage: FunctionComponent = () => {
         res.isLoggedIn,
         new Date().toDateString()
       );
-
-      let usersesh = userSessionDb.getUserFromSessionDb();
-      console.log("TESTDB, ID: " + (await usersesh).userId);
-      console.log("TESTDB, IsLoggedIn: " + (await usersesh).isLoggedIn);
-      console.log("TESTDB, Timestmap: " + (await usersesh).loginTimestamp);
     }
   };
 
   function onSubmit(values: ILoginForm) {
-    console.log("vals: " + ", " + values.userName + ", " + values.password);
     return new Promise((resolve) => {
       setTimeout(() => {
-        alert(JSON.stringify(values.userName, null, 2));
         handleLogin(values);
-
         Promise.resolve(resolve);
-      }, 3000);
+      }, 2000);
     });
   }
   return (

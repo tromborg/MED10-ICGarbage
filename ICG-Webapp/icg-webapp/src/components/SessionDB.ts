@@ -1,5 +1,4 @@
 import Dexie from "dexie";
-
 export class SessionDB extends Dexie {
   userSessionDB!: Dexie.Table<IUserSession>;
 
@@ -17,6 +16,10 @@ export class SessionDB extends Dexie {
       isLoggedIn: newIsLoggedIn,
       loginTimestamp: timestamp
     });
+  }
+
+  async removeUser() {
+    await this.userSessionDB.clear();
   }
 
   async getUserFromSessionDb(): Promise<IUserSession>{
