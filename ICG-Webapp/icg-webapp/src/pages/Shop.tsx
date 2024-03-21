@@ -96,6 +96,7 @@ const ShopPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [userPoints, setUserPoints] = useState<UserRegistry[]>();
   const [cardWidth, setCardWidth] = useState<string>("30%");
+  const [cardWidthInt, setCardWidthInt] = useState<number>(30);
 
   const getUserBalance = async () => {
     let user = await userSessionDb.getUserFromSessionDb();
@@ -130,7 +131,10 @@ const ShopPage = () => {
           max={36}
           defaultValue={30}
           maxW={400}
-          onChange={(v) => setCardWidth(`${v}%`)}
+          onChange={(v) => {
+            setCardWidth(`${v}%`);
+            setCardWidthInt(v);
+          }}
           onChangeEnd={() => console.log(cardWidth)}
           ml="92px"
         >
@@ -151,7 +155,7 @@ const ShopPage = () => {
         backgroundColor="#f8f9fa"
         width="100%"
         p="15px"
-        justifyContent="center"
+        justifyContent={cardWidthInt <= 23 ? "flex-start" : "center"}
         wrap="wrap"
       >
         {cardData.map((card, index) => (
