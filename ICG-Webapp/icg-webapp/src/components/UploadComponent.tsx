@@ -57,10 +57,6 @@ const UploadComponent: FunctionComponent = () => {
               }
             );
             if (res.status === 200) {
-              console.log(res.status);
-              console.log(res.data);
-              console.log(res.data.chunk_num);
-              console.log(res.data.total_chunks);
               setChunkNum(res.data.chunk_num);
               setTotalChunkNum(res.data.total_chunks);
               let loadingVal = (chunkNum / totalChunkNum) * 100;
@@ -82,7 +78,11 @@ const UploadComponent: FunctionComponent = () => {
         <Container>
             {isLoggedIn ? (
                 <Container>
-                    <Card>
+                    <Card 
+                        direction={{ base: 'column', sm: 'row' }}
+                        overflow='hidden'
+                        variant='outline'
+                        width={"100%"}>
                         <CardBody>
                             <Text>Upload a video for segmentation:</Text>
                             <input type="file" onChange={handleFileChange} />
@@ -96,7 +96,12 @@ const UploadComponent: FunctionComponent = () => {
                 </Container>
             ) : (
                 <Container>
-                    <Card>
+                    <Card 
+                    direction={{ base: 'column', sm: 'row' }}
+                    overflow='hidden'
+                    variant='outline'
+                    width={"100%"}
+                    >
                         <CardBody>
                             <Text>Login to upload videos:</Text>
                             <Button onClick={()=>{

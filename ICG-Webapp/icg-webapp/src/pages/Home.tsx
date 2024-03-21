@@ -3,32 +3,37 @@ import {
   Heading,
   Container,
   Divider,
-  Card,
-  CardBody,
   Text,
-  Button,
-  Progress,
+  Box,
+  Img,
+  HStack,
+  Center,
 } from "@chakra-ui/react";
 import LogoSvg from "../design/logo/png/logo-no-background.png";
-import { AppDispatch, RootState } from "../store/store";
-import { useDispatch, useSelector } from "react-redux";
 import UploadComponent from "../components/UploadComponent";
-
+import themes from "../design/themes";
+import "../index.css";
+import bgvideo from "../media/GL010031.mp4";
 
 const Home: FunctionComponent = () => {
-  
-  const isLoggedIn = useSelector((state: RootState) => state.login.isLoggedIn);
-
-  
-
   return (
-    <Container>
-      <Heading>
-        <img src={LogoSvg} alt="ICWaste logo" />
-      </Heading>
-      <Divider />
-      <UploadComponent/>
-    </Container>
+    <Box>
+        <Box>
+        <Box className="overlay"/>
+          <Box>
+          <video  src={bgvideo} autoPlay loop muted />
+            <Box className="vidcontent">
+              <Heading fontSize={"3.5em"}> Velkommen til ICWaste</Heading>
+              <Divider width={"50%"}/>
+              <Text fontSize={"25px"} pt={"1rem"}>Upload videoer af din affaldsindsamling</Text>
+              <Text fontSize={"25px"}>og bliv belønnet for din biddragelse</Text>
+            </Box>
+          </Box>
+        </Box>
+          <Container maxWidth={"100%"} pt={"2em"}>
+            <UploadComponent/>
+          </Container >
+    </Box>
   );
 };
 

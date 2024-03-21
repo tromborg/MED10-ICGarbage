@@ -1,4 +1,4 @@
-import { Box, Flex, HStack, Image } from "@chakra-ui/react";
+import { Box, Flex, HStack, Heading, Image } from "@chakra-ui/react";
 import { NavLink } from "react-router-dom";
 import themes from "../design/themes";
 import logo from "../design/logo/png/logo-no-background.png";
@@ -25,11 +25,13 @@ const Navbar = () => {
       wrap={"wrap"}
       gap={"2"}
       alignItems={"center"}
-      backgroundColor={themes.primaryColours.background}
+      backgroundColor={themes.primaryColours.white}
+      pb={"1em"}
+      pt={"1em"}
     >
       <NavLink to={urls.home}>
         <Box>
-          <Image src={logo} boxSize={"6em"} />
+          <Heading color={themes.adobePalette.darker}>ICWasteDK</Heading>
         </Box>
       </NavLink>
       {!isLoggedIn ? (
