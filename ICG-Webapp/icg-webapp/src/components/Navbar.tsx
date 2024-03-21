@@ -57,6 +57,9 @@ const Navbar = () => {
           <NavLink to={urls.users}>
             <Box sx={NavButtonStyle}> Users </Box>
           </NavLink>
+          <NavLink to={urls.shop}>
+            <Box sx={NavButtonStyle}> Shop </Box>
+          </NavLink>
         </HStack>
       )}
     </Flex>

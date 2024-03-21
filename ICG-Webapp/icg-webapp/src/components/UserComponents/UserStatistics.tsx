@@ -11,15 +11,11 @@ import {
   MenuList,
   MenuItem,
   Divider,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
 } from "@chakra-ui/react";
 import { ApiService } from "../../services/ApiService";
 import { Chart } from "react-google-charts";
 import { IUserRegistry } from "../../apicalls";
-import { UserService } from "../../models/UserService";
+import { UserService } from "../../models/userService";
 import { userSessionDb } from "../SessionDB";
 import { ITimeSeriesInstance } from "../../apicalls";
 import { ChevronDownIcon } from "@chakra-ui/icons";
@@ -27,7 +23,6 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 const UserStatistics: FunctionComponent = () => {
   const [userData, setUserData] = useState<IUserRegistry[]>();
   const [timeData, setTimeData] = useState<ITimeSeriesInstance[]>();
-  const [reverse, setReverse] = useState<ITimeSeriesInstance[]>();
   const [filteredTimeData, setFilteredTimeData] =
     useState<ITimeSeriesInstance[]>();
   const [filteredTimeDataLine, setFilteredTimeDataLine] =
