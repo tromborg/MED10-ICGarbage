@@ -60,3 +60,11 @@ app.post("/api/gettimeseriesdata", jsonParser, async (req, res) => {
   console.log("id3: " + JSON.stringify(timeSeriesData));
   res.status(200).send(timeSeriesData);
 });
+
+app.post("/api/updatepoints", jsonParser, async (req, res) => {
+  let body = JSON.parse(JSON.stringify(req.body));
+  await dbManager.updatePoints(body.userid, body.points, body.isSubtract)
+  res.status(200).send('{"status": "Updated"}');
+});
+
+

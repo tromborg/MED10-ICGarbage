@@ -171,6 +171,46 @@ async function testConn(){
     await client.end()
 }
 
-module.exports = {createUser, testConn, checkLogin, getScoreboardData, getTimeSeriesData}
+async function updatePoints(userid, points, isSubtract){
+    const dbInfo = {
+        user: settings.pgInfo.user,
+        host: settings.pgInfo.host,
+        database: settings.pgInfo.database,
+        password: settings.pgInfo.password,
+        port: settings.pgInfo.port,
+    }
+    const client = new Client(dbInfo);
+
+    try {
+        await client.connect();
+
+        const queryText = 'SELECT points FROM users WHERE userid = $1;';
+        const results = await client.query(queryText, [userid]);
+
+
+        if (results.rows.length === 0) {
+            console.log("Cant find users");
+            throw new Error("Cant find any users")
+        }
+        const currentPoints = results.rows[0].points;
+        let newPoints = currentPoints;
+        if(isSubtract === true){
+            newPoints = currentPoints - points;
+        }
+        if(isSubtract === false){
+            newPoints = currentPoints + points;
+        }
+        const updateQueryText = 'UPDATE users SET points = $1 WHERE userid = $2';
+        const updateResults = await client.query(updateQueryText, [newPoints, userid]);
+
+    } catch (e){
+        console.log("Error in updatePoints: " + e);
+
+    } finally {
+        await client.end();
+    }
+}
+
+module.exports = {createUser, testConn, checkLogin, getScoreboardData, getTimeSeriesData, updatePoints}
 
 
