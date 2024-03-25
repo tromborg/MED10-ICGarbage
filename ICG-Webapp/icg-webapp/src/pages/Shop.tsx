@@ -26,7 +26,7 @@ import elgiganten from "../design/elgiganten.jpg";
 import power from "../design/Power.jpg";
 import jysk from "../design/jysk.jpg";
 import { useState, useEffect } from "react";
-import { UserService } from "../models/userService";
+import { UserService } from "../models/UserService";
 import { userSessionDb } from "../components/SessionDB";
 import { ApiService } from "../services/ApiService";
 import { UserRegistry } from "../apicalls";

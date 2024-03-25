@@ -14,17 +14,19 @@ import {
   FormControl,
   FormHelperText,
   InputRightElement,
+  Divider
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import urls from "../urls";
-import { UserBody, UserService } from "../../models/userService";
+import { UserBody, UserService } from "../../models/UserService";
 import { AppDispatch } from "../../store/store";
 import { useDispatch } from "react-redux";
 import { setLogin } from "../../store/reducers/login";
 import { userSessionDb } from "../../components/SessionDB";
 import { setUserId } from "../../store/reducers/userid";
+import themes from "../../design/themes";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -76,18 +78,20 @@ const LoginPage: FunctionComponent = () => {
       flexDirection="column"
       width="100%"
       height="100%"
-      backgroundColor="gray.200"
+      
       justifyContent="center"
       alignItems="center"
     >
+      <Divider/>
       <Stack
         flexDir="column"
         mb="2"
         justifyContent="center"
         alignItems="center"
+        pt={"1em"}
       >
-        <Avatar bg="teal.500" />
-        <Heading color="teal.400">Welcome</Heading>
+        <Avatar bg="green.500" />
+        <Heading color={themes.primaryColours.lightGreen}>Welcome</Heading>
         <Box minW={{ base: "90%", md: "468px" }}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack
@@ -100,7 +104,7 @@ const LoginPage: FunctionComponent = () => {
                 <InputGroup>
                   <InputLeftElement
                     pointerEvents="none"
-                    children={<CFaUserAlt color="gray.300" />}
+                    children={<CFaUserAlt color="green.300" />}
                   />
                   <Input
                     type="username"
@@ -119,8 +123,8 @@ const LoginPage: FunctionComponent = () => {
                 <InputGroup>
                   <InputLeftElement
                     pointerEvents="none"
-                    color="gray.300"
-                    children={<CFaLock color="gray.300" />}
+                    color="green.300"
+                    children={<CFaLock color="green.300" />}
                   />
                   <Input
                     type={showPassword ? "text" : "password"}
@@ -147,7 +151,7 @@ const LoginPage: FunctionComponent = () => {
                 borderRadius={0}
                 type="submit"
                 variant="solid"
-                colorScheme="teal"
+                colorScheme="green"
                 width="full"
                 isLoading={isSubmitting}
               >
@@ -159,7 +163,7 @@ const LoginPage: FunctionComponent = () => {
       </Stack>
       <Box>
         New to us?{" "}
-        <Link color="teal.500" href="/signup">
+        <Link color="green" href="/signup">
           Sign Up
         </Link>
       </Box>

@@ -42,7 +42,7 @@ const GlobalLeaderboard : FunctionComponent = () => {
                 {userData?.map((user, index) => {
                         let rowColour = themes.primaryColours.white;
                         if(user.userid === currentUser){
-                            rowColour = themes.primaryColours.lightGreen;
+                            rowColour = themes.adobePalette.lighter;
                         }
                         return (
                             <VStack pb={"1em"}>
@@ -57,16 +57,16 @@ const GlobalLeaderboard : FunctionComponent = () => {
                                         <HStack justify={"space-between"}>
                                             <Box>
                                                 <HStack>
-                                                    <Text py='2' >
+                                                    <Text py='2' fontWeight={"bold"} color={themes.adobePalette.darkest}>
                                                         {index+1}.
                                                     </Text>
-                                                    <Text py='2' >
+                                                    <Text py='2' fontWeight={"bold"} color={themes.adobePalette.darkest}>
                                                         {user.userName}
                                                     </Text>
                                                 </HStack>
                                             </Box>
                                             <Box>
-                                                <Text py='2'>
+                                                <Text py='2' fontWeight={"bold"} color={themes.adobePalette.darkest}>
                                                     {user.points + " WP"} 
                                                 </Text>
                                             </Box>

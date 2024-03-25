@@ -8,7 +8,7 @@ const primaryColours = {
 const adobePalette = {
     main: '#5AB463',
     darker: '#499250',
-    lighter: '#5EBD68',
+    lighter: '#CCFFCF',
     evenDarker: '#38703E',
     darkest: '#274E2B'
 }

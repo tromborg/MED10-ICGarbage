@@ -13,11 +13,12 @@ import {
   Avatar,
   FormControl,
   InputRightElement,
+  Divider
 } from "@chakra-ui/react";
 import { FaUserAlt, FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import urls from "../urls";
-import { UserBody, UserService } from "../../models/userService";
+import { UserBody, UserService } from "../../models/UserService";
 
 const CFaUserAlt = chakra(FaUserAlt);
 const CFaLock = chakra(FaLock);
@@ -80,18 +81,19 @@ const SignupPage: FunctionComponent = () => {
       flexDirection="column"
       width="100%"
       height="100%"
-      backgroundColor="gray.200"
       justifyContent="center"
       alignItems="center"
     >
+      <Divider/>
       <Stack
         flexDir="column"
         mb="2"
         justifyContent="center"
         alignItems="center"
+        pt={"1em"}
       >
-        <Avatar bg="teal.500" />
-        <Heading color="teal.400">Sign up</Heading>
+        <Avatar bg="green.500" />
+        <Heading color="green.400">Sign up</Heading>
         <Box minW={{ base: "90%", md: "468px" }}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack
@@ -104,7 +106,7 @@ const SignupPage: FunctionComponent = () => {
                 <InputGroup>
                   <InputLeftElement
                     pointerEvents="none"
-                    children={<CFaUserAlt color="gray.300" />}
+                    children={<CFaUserAlt color="green.300" />}
                   />
                   <Input
                     type="username"
@@ -123,7 +125,7 @@ const SignupPage: FunctionComponent = () => {
                 <InputGroup>
                   <InputLeftElement
                     pointerEvents="none"
-                    children={<CFaUserAlt color="gray.300" />}
+                    children={<CFaUserAlt color="green.300" />}
                   />
                   <Input
                     type="email"
@@ -143,7 +145,7 @@ const SignupPage: FunctionComponent = () => {
                   <InputLeftElement
                     pointerEvents="none"
                     color="gray.300"
-                    children={<CFaLock color="gray.300" />}
+                    children={<CFaLock color="green.300" />}
                   />
                   <Input
                     type={showPassword ? "text" : "password"}
@@ -167,7 +169,7 @@ const SignupPage: FunctionComponent = () => {
                 borderRadius={0}
                 type="submit"
                 variant="solid"
-                colorScheme="teal"
+                colorScheme="green"
                 width="full"
                 isLoading={isSubmitting}
               >

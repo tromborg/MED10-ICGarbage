@@ -11,6 +11,7 @@ import {
   Td,
   Button,
   Box,
+  Divider,
 } from "@chakra-ui/react";
 
 const UserOverview: FunctionComponent = () => {
