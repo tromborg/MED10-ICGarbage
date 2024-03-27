@@ -65,11 +65,54 @@ async function checkLogin(usrname, psswrd) {
     }
 }
 
-async function getUserStats(user_id){
-    // Get total user points from users table
-    // Get all instances of uploads and their respective points and timestamps from videodata table
-    // Create JS and Oject with timeseries data (totalpoint: total, points: weekly, monthly) for overview
-    
+async function getUser(user_id){
+    const dbInfo = {
+        user: settings.pgInfo.user,
+        host: settings.pgInfo.host,
+        database: settings.pgInfo.database,
+        password: settings.pgInfo.password,
+        port: settings.pgInfo.port,
+    }
+    const client = new Client(dbInfo);
+
+    try {
+        await client.connect();
+
+        const queryText = 'SELECT * FROM users WHERE userid = $1';
+        const result = await client.query(queryText, [user_id]);
+
+        if (result.rows.length === 0) {
+            console.log("Cant find user");
+            return false; // User does not exist
+        }
+  
+        const userData = result.rows.map(row => ({
+            userid: row.userid,
+            username: row.username,
+            email: row.email,
+            signupdate: row.signup_date,
+            points: row.points
+          }));
+
+        const videoDataQueryText = 'SELECT points FROM videodata WHERE userid = $1';
+        const vdResult = await client.query(videoDataQueryText, [user_id]);
+        const vdData = vdResult.rows.map(row => ([Number(row.points)]));
+        let temp = 0
+        for(let i = 0; i < vdData.length; i++){
+            let add = Math.abs(vdData[i])
+            temp += add;
+        }
+        const userOverview = {...userData[0], "totalwaste": temp}
+
+        return userOverview;
+    } catch (error) {
+        console.error('Error checking user and password:', error);
+        return {"userId":`none`, "isLoggedIn": false};
+
+    } finally {
+        
+        await client.end();
+    }
 }
 
 async function getTimeSeriesData(userid){
@@ -211,6 +254,6 @@ async function updatePoints(userid, points, isSubtract){
     }
 }
 
-module.exports = {createUser, testConn, checkLogin, getScoreboardData, getTimeSeriesData, updatePoints}
+module.exports = {createUser, testConn, checkLogin, getScoreboardData, getTimeSeriesData, updatePoints, getUser}
 
 

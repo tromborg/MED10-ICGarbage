@@ -35,6 +35,12 @@ app.post("/api/checklogin", jsonParser, async (req, res) => {
   res.status(200).send(user);
 });
 
+app.post("/api/getuser", jsonParser, async (req, res) => {
+  let body = JSON.parse(JSON.stringify(req.body));
+  let user = await dbManager.getUser(body.userid);
+  res.status(200).send(user);
+});
+
 app.get("/test", async (req, res) => {
   console.log("/test request recevied");
   await dbManager.testConn();

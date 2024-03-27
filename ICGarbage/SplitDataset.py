@@ -70,7 +70,7 @@ def split_dataset(original_folder_path_img, original_folder_path_labels, destina
 if __name__ == "__main__":
     original_folder_path = "./grabberframes/images/"
     original_folder_path_labels = "./grabberframes/labels/"
-    destination_folder_path_img = "./grapperyolosplit/images/"
-    destination_folder_path_labels = "./grapperyolosplit/labels/"
+    destination_folder_path_img = "./newgrapper/images/"
+    destination_folder_path_labels = "./newgrapper/labels/"
 
     split_dataset(original_folder_path, original_folder_path_labels, destination_folder_path_img, destination_folder_path_labels)
