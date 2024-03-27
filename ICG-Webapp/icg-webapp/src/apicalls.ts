@@ -312,8 +312,117 @@ export class WebICGApiClient implements IWebICGAPIClient {
     }
     return Promise.resolve<TimeSeriesInstance[]>(null as any);
   }
+
+
+  async get_useroverview(userid: string): Promise<UserOverview> {
+    let url_ = this.baseUrl + "/getuser";
+    url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify({userid: userid});
+    console.log("sending: " + content_);
+    let options_: RequestInit = {
+      body: content_,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processGet_useroverview(_response);
+    });
+  }
+
+  protected processGet_useroverview(response: Response): Promise<UserOverview> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach(
+        (value: any, key: any) => (_headers[key] = value)
+      );
+    }
+    if (status == 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 =
+          _responseText === ""
+            ? null
+            : JSON.parse(_responseText, this.jsonParseReviver);
+        console.log("result201: " + resultData200);
+        const useroverview = UserOverview.fromJS(resultData200);
+        return useroverview;
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          "An unexpected server error ocurred.",
+          status,
+          _responseText,
+          _headers
+        );
+      });
+    }
+    return Promise.resolve<UserOverview>(null as any);
+  }
 }
 
+export interface IUserOverview {
+  userid?: string;
+  username?: string;
+  email?: string;
+  signupdate?: string;
+  points?: number;
+  totalwaste?: number;
+}
+
+export class UserOverview implements IUserOverview {
+  userid?: string | undefined;
+  username?: string | undefined;
+  email?: string | undefined;
+  signupdate?: string | undefined;
+  points?: number | undefined;
+  totalwaste: number | undefined;
+
+  constructor(data?: IUserOverview) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) {
+          (<any>this)[property] = (<any>data)[property];
+        }
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.userid = _data["userid"];
+      this.username = _data["username"];
+      this.email = _data["email"];
+      this.signupdate = _data["signupdate"];
+      this.points = _data["points"];
+      this.totalwaste = _data["totalwaste"]
+    }
+  }
+
+  static fromJS(data: any): UserOverview {
+    data = typeof data === "object" ? data : {};
+    let result = new UserOverview();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === "object" ? data : {};
+    data["userid"] = this.userid;
+    data["username"] = this.username;
+    data["email"] = this.email;
+    data["signupdate"] = this.signupdate;
+    data["points"] = this.points;
+    data["totalwaste"] = this.totalwaste;
+    return data;
+  }
+}
 
 export interface ITimeSeriesInstance {
   userid?: string;

@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import Sidebar from "../components/UserComponents/UserSideBar";
-import UserOverview from "../components/UserComponents/UserOverview";
+import UserOverviewPage from "../components/UserComponents/UserOverviewPage";
 import UserStatistics from "../components/UserComponents/UserStatistics";
 import GlobalLeaderboard from "../components/UserComponents/GlobalLeaderboard";
 
@@ -24,7 +24,7 @@ const Users: FunctionComponent = () => {
   let content: JSX.Element;
   switch (selectedItem) {
     case "useroverview":
-      content = <UserOverview />;
+      content = <UserOverviewPage />;
       break;
     case "userstatistics":
       content = <UserStatistics />;
@@ -33,7 +33,7 @@ const Users: FunctionComponent = () => {
       content = <GlobalLeaderboard />;
       break;
     default:
-      content = <UserOverview />;
+      content = <UserOverviewPage />;
   }
 
   return (

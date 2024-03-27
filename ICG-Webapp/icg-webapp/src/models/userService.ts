@@ -1,4 +1,4 @@
-import { LoginInstance, TimeSeriesInstance, UserRegistry } from "../apicalls";
+import { LoginInstance, TimeSeriesInstance, UserOverview, UserRegistry } from "../apicalls";
 import { ApiService } from "../services/ApiService";
 
 export type UserBody = {
@@ -55,5 +55,17 @@ export class UserService {
       console.log("Userservice error: " + e);
       return Promise.resolve<TimeSeriesInstance[]>(null as any);
     }
+  }
+
+  async GetUserOverview(userid: string): Promise<UserOverview>{
+    try {
+      let useroverview = await ApiService.client().get_useroverview(userid);
+      return useroverview
+      
+    } catch (e) {
+      console.log("Userservice error: " + e);
+      return Promise.resolve<UserOverview>(null as any);
+    }
+
   }
 }

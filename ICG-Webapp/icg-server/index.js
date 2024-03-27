@@ -37,6 +37,7 @@ app.post("/api/checklogin", jsonParser, async (req, res) => {
 
 app.post("/api/getuser", jsonParser, async (req, res) => {
   let body = JSON.parse(JSON.stringify(req.body));
+  console.log("getuser called from: " + body.userid);
   let user = await dbManager.getUser(body.userid);
   res.status(200).send(user);
 });
