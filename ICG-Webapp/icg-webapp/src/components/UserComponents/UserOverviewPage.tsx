@@ -11,10 +11,11 @@ import {
   Td,
   Button,
   Box,
-  Divider,
+  Center,
 } from "@chakra-ui/react";
 import { UserService } from "../../models/UserService";
 import { userSessionDb } from "../SessionDB";
+import themes from '../../design/themes';
 import { IUserOverview, UserOverview } from "../../apicalls";
 
 const UserOverviewPage: FunctionComponent = () => {
@@ -50,8 +51,13 @@ const UserOverviewPage: FunctionComponent = () => {
 }, []);
 
   return (
-    <Box width={"80%"}>
-      <Heading>Brugeroversigt</Heading>
+    <Center>
+    <Box width={"80%"} justifyContent={"center"}>
+      <Center pb={"1em"}>
+          <Heading justifySelf={"center"} color={themes.adobePalette.darker}>
+              BRUGEROVERSIGT
+          </Heading>
+      </Center>
       <TableContainer>
         <Table variant="simple">
           <Tbody>
@@ -80,6 +86,7 @@ const UserOverviewPage: FunctionComponent = () => {
       </TableContainer>
       <Button onClick={() => userData && console.log("check3: " + userData.email)}> TESETZ </Button>
     </Box>
+    </Center>
   );
 };
 

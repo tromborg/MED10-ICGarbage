@@ -365,6 +365,102 @@ export class WebICGApiClient implements IWebICGAPIClient {
     }
     return Promise.resolve<UserOverview>(null as any);
   }
+
+  async update_points(userid: string, points: number, isSubtract: boolean) {
+    let url_ = this.baseUrl + "/updatepoints";
+    url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify({userid: userid, points: points, isSubtract: isSubtract});
+    console.log("sending: " + content_);
+    let options_: RequestInit = {
+      body: content_,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processUpdate_points(_response);
+    });
+  }
+
+  protected processUpdate_points(response: Response) {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach(
+        (value: any, key: any) => (_headers[key] = value)
+      );
+    }
+    if (status == 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 =
+          _responseText === ""
+            ? null
+            : _responseText
+        console.log("result201: " + resultData200);
+        return resultData200;
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          "An unexpected server error ocurred.",
+          status,
+          _responseText,
+          _headers
+        );
+      });
+    }
+    return Promise.resolve(null as any);
+  }
+}
+
+export interface IUpdatePointsInstance {
+  userid?: string;
+  points?: number;
+  isSubtract?: boolean
+}
+
+export class UpdatePointsInstance implements IUpdatePointsInstance {
+  userid?: string | undefined;
+  points?: number | undefined;
+  isSubtract?: boolean | undefined;
+
+  constructor(data?: IUpdatePointsInstance) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) {
+          (<any>this)[property] = (<any>data)[property];
+        }
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.userid = _data["userid"];
+      this.points = _data["points"];
+      this.isSubtract = _data["isSubtract"];
+    }
+  }
+
+  static fromJS(data: any): UpdatePointsInstance {
+    data = typeof data === "object" ? data : {};
+    let result = new UpdatePointsInstance();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === "object" ? data : {};
+    data["userid"] = this.userid;
+    data["points"] = this.points;
+    data["isSubtract"] = this.isSubtract;
+    return data;
+  }
 }
 
 export interface IUserOverview {

@@ -68,4 +68,13 @@ export class UserService {
     }
 
   }
+
+  async UpdatePoints(userid: string, points: number, isSubtract: boolean) {
+    try {
+      let res = await ApiService.client().update_points(userid, points, isSubtract);
+      return res
+    } catch (e) {
+      console.log("Updatepoints error: " + e)
+    }
+  }
 }

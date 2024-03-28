@@ -71,7 +71,7 @@ app.post("/api/gettimeseriesdata", jsonParser, async (req, res) => {
 app.post("/api/updatepoints", jsonParser, async (req, res) => {
   let body = JSON.parse(JSON.stringify(req.body));
   await dbManager.updatePoints(body.userid, body.points, body.isSubtract)
-  res.status(200).send('{"status": "Updated"}');
+  res.sendStatus(200);
 });
 
 
