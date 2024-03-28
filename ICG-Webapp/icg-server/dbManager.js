@@ -91,18 +91,11 @@ async function getUser(user_id){
             username: row.username,
             email: row.email,
             signupdate: row.signup_date,
-            points: row.points
+            points: row.points,
+            total_points: row.total_points
           }));
 
-        const videoDataQueryText = 'SELECT points FROM videodata WHERE userid = $1';
-        const vdResult = await client.query(videoDataQueryText, [user_id]);
-        const vdData = vdResult.rows.map(row => ([Number(row.points)]));
-        let temp = 0
-        for(let i = 0; i < vdData.length; i++){
-            let add = Math.abs(vdData[i])
-            temp += add;
-        }
-        const userOverview = {...userData[0], "totalwaste": temp}
+        const userOverview = {...userData[0]}
 
         return userOverview;
     } catch (error) {
@@ -170,7 +163,7 @@ async function getScoreboardData(){
     try {
         await client.connect();
 
-        const queryText = 'SELECT "username", "userid", "points" FROM users;';
+        const queryText = 'SELECT "username", "userid", "total_points" FROM users;';
         const result = await client.query(queryText);
 
         if (result.rows.length === 0) {
@@ -181,7 +174,7 @@ async function getScoreboardData(){
         const userList = result.rows.map(row => ({
             userid: row.userid,
             user: row.username,
-            points: row.points
+            points: row.total_points
           }));
         
 

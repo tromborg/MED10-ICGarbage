@@ -8,11 +8,11 @@ import {
   Container,
   Flex,
 } from "@chakra-ui/react";
-import { ChevronDownIcon } from "@chakra-ui/icons";
 import Sidebar from "../components/UserComponents/UserSideBar";
 import UserOverviewPage from "../components/UserComponents/UserOverviewPage";
 import UserStatistics from "../components/UserComponents/UserStatistics";
 import GlobalLeaderboard from "../components/UserComponents/GlobalLeaderboard";
+import UserInventory from "../components/UserComponents/UserInventory";
 
 const Users: FunctionComponent = () => {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -31,6 +31,9 @@ const Users: FunctionComponent = () => {
       break;
     case "globalleaderboard":
       content = <GlobalLeaderboard />;
+      break;
+    case "userinventory":
+      content = <UserInventory />;
       break;
     default:
       content = <UserOverviewPage />;

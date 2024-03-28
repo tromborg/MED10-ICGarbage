@@ -26,14 +26,17 @@ const UserOverviewPage: FunctionComponent = () => {
     let userService = new UserService();
     let user = await userSessionDb.getUserFromSessionDb();
     const useroverview = await userService.GetUserOverview(user.userId!);
+    let signupdate = useroverview.signupdate;
+    let splitsignupdate = signupdate?.split("T");
+    signupdate = splitsignupdate ? splitsignupdate![0] : "";
     if (useroverview !== null){
       setUserData(new UserOverview({
         username: useroverview.username,
         email: useroverview.email,
         userid: useroverview.userid,
         points: useroverview.points,
-        signupdate: useroverview.signupdate,
-        totalwaste: useroverview.totalwaste
+        signupdate: signupdate,
+        total_points: useroverview.total_points
       }));
     } else {
       console.log("useroverview data is null");
@@ -71,7 +74,7 @@ const UserOverviewPage: FunctionComponent = () => {
             </Tr>
             <Tr>
               <Td>Medlem siden: </Td>
-              <Td>{userData?.signupdate ? userData.signupdate : "Henter data..."}</Td>
+              <Td>{userData?.signupdate?.toString().split("T")[0] ? userData.signupdate : "Henter data..."}</Td>
             </Tr>
             <Tr>
               <Td>Nuværende Waste points: </Td>
@@ -79,7 +82,7 @@ const UserOverviewPage: FunctionComponent = () => {
             </Tr>
             <Tr>
               <Td>Lifetime Waste points: </Td>
-              <Td>{userData?.totalwaste ? userData.totalwaste : "Henter data..."}</Td>
+              <Td>{userData?.total_points ? userData.total_points : "Henter data..."}</Td>
             </Tr>
           </Tbody>
         </Table>

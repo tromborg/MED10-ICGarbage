@@ -469,7 +469,7 @@ export interface IUserOverview {
   email?: string;
   signupdate?: string;
   points?: number;
-  totalwaste?: number;
+  total_points?: number;
 }
 
 export class UserOverview implements IUserOverview {
@@ -478,7 +478,7 @@ export class UserOverview implements IUserOverview {
   email?: string | undefined;
   signupdate?: string | undefined;
   points?: number | undefined;
-  totalwaste: number | undefined;
+  total_points: number | undefined;
 
   constructor(data?: IUserOverview) {
     if (data) {
@@ -497,7 +497,7 @@ export class UserOverview implements IUserOverview {
       this.email = _data["email"];
       this.signupdate = _data["signupdate"];
       this.points = _data["points"];
-      this.totalwaste = _data["totalwaste"]
+      this.total_points = _data["total_points"]
     }
   }
 
@@ -515,7 +515,7 @@ export class UserOverview implements IUserOverview {
     data["email"] = this.email;
     data["signupdate"] = this.signupdate;
     data["points"] = this.points;
-    data["totalwaste"] = this.totalwaste;
+    data["total_points"] = this.total_points;
     return data;
   }
 }
