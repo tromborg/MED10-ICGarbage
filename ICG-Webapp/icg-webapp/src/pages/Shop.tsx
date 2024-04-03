@@ -7,17 +7,14 @@ import {
   Modal,
   ModalOverlay,
   ModalContent,
-  ModalHeader,
-  ModalCloseButton,
   ModalBody,
   ModalFooter,
   useDisclosure,
   Button,
   Slider,
   SliderTrack,
-  SliderFilledTrack,
   SliderThumb,
-  SliderMark,
+  useToast
 } from "@chakra-ui/react";
 import fotex from "../design/fotex.jpg";
 import flammen from "../design/flammen.jpg";
@@ -97,6 +94,7 @@ const ShopPage = () => {
   const [userPoints, setUserPoints] = useState<UserRegistry[]>();
   const [cardWidth, setCardWidth] = useState<string>("30%");
   const [cardWidthInt, setCardWidthInt] = useState<number>(30);
+  const toast = useToast()
 
   const getUserBalance = async () => {
     let user = await userSessionDb.getUserFromSessionDb();
@@ -106,6 +104,38 @@ const ShopPage = () => {
       scoreboardData.filter((users) => users.userid === user.userId)
     );
   };
+
+  const handlePurchase = async (points: number) => {
+    if (userPoints){
+      if(userPoints[0].points! > points){
+        let userservice = new UserService()
+        console.log("Bought");
+        userservice.UpdatePoints(userPoints[0].userid!, points, true);
+        onClose();
+        return (
+          toast({
+          title: 'Kupon købt!',
+          description: "Tid til at nyde det :)",
+          status: 'success',
+          duration: 5000,
+          isClosable: true,
+        })
+        )
+      } 
+      else {
+        console.log("Broke");
+        return (
+          toast({
+            title: 'Ikke noget point!',
+            description: "Du har desværre ikke nok points til at købe denne kupon.",
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          })
+          )
+      }
+    } 
+  }
 
   const handleCardClick = (card: Card) => {
     setSelectedCard(card);
@@ -253,9 +283,9 @@ const ShopPage = () => {
               width="50%"
               backgroundColor="#5AB463"
               mr="5px"
-              onClick={onClose}
+              onClick={async ()=>{await handlePurchase(selectedCard!.points)}}
             >
-              Køb
+              Køb 
             </Button>
             <Button width="50%" ml="5px" onClick={onClose}>
               Anuller

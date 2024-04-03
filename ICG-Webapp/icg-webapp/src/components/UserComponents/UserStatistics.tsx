@@ -18,6 +18,7 @@ import { IUserRegistry } from "../../apicalls";
 import { UserService } from "../../models/UserService";
 import { userSessionDb } from "../SessionDB";
 import { ITimeSeriesInstance } from "../../apicalls";
+import themes from '../../design/themes';
 import { ChevronDownIcon } from "@chakra-ui/icons";
 
 const UserStatistics: FunctionComponent = () => {
@@ -134,7 +135,7 @@ const UserStatistics: FunctionComponent = () => {
   return (
     <Flex width="100%" flexDirection="column">
       <Box m="10px" alignSelf="center">
-        <Heading alignSelf="center">Statistics</Heading>
+        <Heading alignSelf="center" color={themes.adobePalette.darker}>STATISTIKKER</Heading>
       </Box>
       {filteredTimeData && filteredTimeDataLine && (
         <Flex width="100%">

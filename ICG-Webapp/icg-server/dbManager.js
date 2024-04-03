@@ -65,11 +65,47 @@ async function checkLogin(usrname, psswrd) {
     }
 }
 
-async function getUserStats(user_id){
-    // Get total user points from users table
-    // Get all instances of uploads and their respective points and timestamps from videodata table
-    // Create JS and Oject with timeseries data (totalpoint: total, points: weekly, monthly) for overview
-    
+async function getUser(user_id){
+    const dbInfo = {
+        user: settings.pgInfo.user,
+        host: settings.pgInfo.host,
+        database: settings.pgInfo.database,
+        password: settings.pgInfo.password,
+        port: settings.pgInfo.port,
+    }
+    const client = new Client(dbInfo);
+
+    try {
+        await client.connect();
+
+        const queryText = 'SELECT * FROM users WHERE userid = $1';
+        const result = await client.query(queryText, [user_id]);
+
+        if (result.rows.length === 0) {
+            console.log("Cant find user");
+            return false; // User does not exist
+        }
+  
+        const userData = result.rows.map(row => ({
+            userid: row.userid,
+            username: row.username,
+            email: row.email,
+            signupdate: row.signup_date,
+            points: row.points,
+            total_points: row.total_points
+          }));
+
+        const userOverview = {...userData[0]}
+
+        return userOverview;
+    } catch (error) {
+        console.error('Error checking user and password:', error);
+        return {"userId":`none`, "isLoggedIn": false};
+
+    } finally {
+        
+        await client.end();
+    }
 }
 
 async function getTimeSeriesData(userid){
@@ -127,7 +163,7 @@ async function getScoreboardData(){
     try {
         await client.connect();
 
-        const queryText = 'SELECT "username", "userid", "points" FROM users;';
+        const queryText = 'SELECT "username", "userid", "total_points" FROM users;';
         const result = await client.query(queryText);
 
         if (result.rows.length === 0) {
@@ -138,7 +174,7 @@ async function getScoreboardData(){
         const userList = result.rows.map(row => ({
             userid: row.userid,
             user: row.username,
-            points: row.points
+            points: row.total_points
           }));
         
 
@@ -211,6 +247,6 @@ async function updatePoints(userid, points, isSubtract){
     }
 }
 
-module.exports = {createUser, testConn, checkLogin, getScoreboardData, getTimeSeriesData, updatePoints}
+module.exports = {createUser, testConn, checkLogin, getScoreboardData, getTimeSeriesData, updatePoints, getUser}
 
 

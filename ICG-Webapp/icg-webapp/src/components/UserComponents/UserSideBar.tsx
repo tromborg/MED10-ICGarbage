@@ -12,8 +12,6 @@ interface SidebarProps {
   onItemClick: (item: string) => void;
 }
 
-
-
 const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
   const loginDispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -43,6 +41,8 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
         <Link href="#useroverview" p="2" _hover={{ bg: themes.adobePalette.main }} borderRadius={"2em"} onClick={() => onItemClick('useroverview')}>Brugeroversigt</Link>
         <Link href="#userstatistics" p="2" _hover={{ bg: themes.adobePalette.main }} borderRadius={"2em"} onClick={() => onItemClick('userstatistics')}>Statistikker</Link>
         <Link href='#globalleaderboard' p="2" _hover={{ bg: themes.adobePalette.main }} borderRadius={"2em"} onClick={() => onItemClick('globalleaderboard')}>Globalt Leaderboard</Link>
+        <Link href='#userinventory' p="2" _hover={{ bg: themes.adobePalette.main }} borderRadius={"2em"} onClick={() => onItemClick('userinventory')}>Mine Kuponer</Link>
+
         <Button colorScheme="red" onClick={handleLogout}>
           Log out
         </Button>
