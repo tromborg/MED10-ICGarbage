@@ -70,8 +70,21 @@ app.post("/api/gettimeseriesdata", jsonParser, async (req, res) => {
 
 app.post("/api/updatepoints", jsonParser, async (req, res) => {
   let body = JSON.parse(JSON.stringify(req.body));
-  await dbManager.updatePoints(body.userid, body.points, body.isSubtract)
+  await dbManager.updatePoints(body.userid, body.points, body.isSubtract);
   res.sendStatus(200);
 });
+
+app.post("/api/createpurchase", jsonParser, async (req, res) => {
+  let body = JSON.parse(JSON.stringify(req.body));
+  await dbManager.insertPurchase(body.userid, body.coupon_id);
+  res.sendStatus(200);
+});
+
+app.post("/api/getpurchases", jsonParser, async (req, res) => {
+  let body = JSON.parse(JSON.stringify(req.body));
+  let purchases = await dbManager.getPurchaseData(body.userid);
+  res.status(200).send(purchases);
+});
+
 
 

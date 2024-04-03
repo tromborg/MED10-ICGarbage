@@ -182,10 +182,74 @@ async function getScoreboardData(){
         return userList
 
     } catch (e){
-        console.log("Error in getUserStats: " + e);
+        console.log("Error in getScoreboardData: " + e);
 
     } finally {
         await client.end();
+    }
+}
+
+async function getPurchaseData(userid){
+    const dbInfo = {
+        user: settings.pgInfo.user,
+        host: settings.pgInfo.host,
+        database: settings.pgInfo.database,
+        password: settings.pgInfo.password,
+        port: settings.pgInfo.port,
+    }
+    const client = new Client(dbInfo);
+
+    try {
+        await client.connect();
+
+        const queryText = 'SELECT "userid", "coupon_id", "purchase_date" FROM purchases WHERE userid = $1;';
+        const result = await client.query(queryText, [userid]);
+
+        if (result.rows.length === 0) {
+            console.log("Cant find users");
+            throw new Error("Cant find any users")
+        }
+
+        const purchaseList = result.rows.map(row => ({
+            userid: row.userid,
+            couponid: row.coupon_id,
+            purchase_date: row.purchase_date
+          }));
+        
+
+        console.log("userlist: " + JSON.stringify(purchaseList));
+        return purchaseList
+
+    } catch (e){
+        console.log("Error in getPurchaseData: " + e);
+
+    } finally {
+        await client.end();
+    }
+}
+
+async function insertPurchase(userid, purchaseid) {     
+    try {
+        
+        const client = new Client({
+            user: settings.pgInfo.user,
+            host: settings.pgInfo.host,
+            database: settings.pgInfo.database,
+            password: settings.pgInfo.password,
+            port: settings.pgInfo.port,
+        });
+ 
+        console.log(`inserting purchase, usr: ${userid}, purchaseid: ${purchaseid}`);
+        const query = {
+            text: 'INSERT INTO purchases(userid, coupon_id) VALUES($1, $2)',
+            values: [userid, purchaseid],
+          };
+        await client.connect()
+        await client.query(query);
+        await client.end();
+    } catch (error) {
+            console.error('Error inserting purchase:', error);
+        throw error;
     }
 }
 
@@ -247,6 +311,6 @@ async function updatePoints(userid, points, isSubtract){
     }
 }
 
-module.exports = {createUser, testConn, checkLogin, getScoreboardData, getTimeSeriesData, updatePoints, getUser}
+module.exports = {createUser, testConn, checkLogin, getScoreboardData, getTimeSeriesData, updatePoints, getUser, getPurchaseData, insertPurchase}
 
 

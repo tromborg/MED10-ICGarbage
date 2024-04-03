@@ -16,78 +16,17 @@ import {
   SliderThumb,
   useToast
 } from "@chakra-ui/react";
-import fotex from "../design/fotex.jpg";
-import flammen from "../design/flammen.jpg";
-import booking from "../design/booking.png";
-import elgiganten from "../design/elgiganten.jpg";
-import power from "../design/Power.jpg";
-import jysk from "../design/jysk.jpg";
 import { useState, useEffect } from "react";
 import { UserService } from "../models/UserService";
 import { userSessionDb } from "../components/SessionDB";
 import { ApiService } from "../services/ApiService";
 import { UserRegistry } from "../apicalls";
+import { cardData, Card } from "../components/CardData";
 
 const ShopPage = () => {
-  interface Card {
-    id: number;
-    title: string;
-    description: string;
-    imageSrc: string;
-    points: number;
-    imageAlign: number;
-  }
+  
 
-  const cardData: Card[] = [
-    {
-      id: 1,
-      title: "Spar 50% på din næste banan.",
-      description: "Føtex",
-      imageSrc: fotex,
-      points: 30,
-      imageAlign: -190,
-    },
-    {
-      id: 2,
-      title: "10% på hele regningen + gratis desert",
-      description: "Flammen",
-      imageSrc: flammen,
-      points: 50,
-      imageAlign: 0,
-    },
-    {
-      id: 3,
-      title: "Spar 25% på din næste booking!",
-      description: "Booking.com",
-      imageSrc: booking,
-      points: 60,
-      imageAlign: -165,
-    },
-    {
-      id: 4,
-      title: "Gratis Calman-kalibrering ved næste køb af TV.",
-      description: "Elgiganten",
-      imageSrc: elgiganten,
-      points: 40,
-      imageAlign: -85,
-    },
-    {
-      id: 5,
-      title: "Spar 30% på din næste vaskemaskine.",
-      description: "Power",
-      imageSrc: power,
-      points: 60,
-      imageAlign: -62,
-    },
-    {
-      id: 6,
-      title: "Gratis hovedpude ved køb af næste seng.",
-      description: "Jysk",
-      imageSrc: jysk,
-      points: 10,
-      imageAlign: -160,
-    },
-  ];
+  const carddata: Card[] = cardData as Card[]
 
   const [selectedCard, setSelectedCard] = useState<Card | undefined>();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -105,12 +44,13 @@ const ShopPage = () => {
     );
   };
 
-  const handlePurchase = async (points: number) => {
+  const handlePurchase = async (points: number, couponid: number) => {
     if (userPoints){
       if(userPoints[0].points! > points){
         let userservice = new UserService()
         console.log("Bought");
         userservice.UpdatePoints(userPoints[0].userid!, points, true);
+        userservice.RegisterPurchase(userPoints[0].userid!, couponid);
         onClose();
         return (
           toast({
@@ -188,7 +128,7 @@ const ShopPage = () => {
         justifyContent={cardWidthInt <= 23 ? "flex-start" : "center"}
         wrap="wrap"
       >
-        {cardData.map((card, index) => (
+        {carddata.map((card, index) => (
           <Flex
             key={index}
             width={cardWidth}
@@ -283,7 +223,7 @@ const ShopPage = () => {
               width="50%"
               backgroundColor="#5AB463"
               mr="5px"
-              onClick={async ()=>{await handlePurchase(selectedCard!.points)}}
+              onClick={async ()=>{await handlePurchase(selectedCard!.points, selectedCard!.id)}}
             >
               Køb 
             </Button>

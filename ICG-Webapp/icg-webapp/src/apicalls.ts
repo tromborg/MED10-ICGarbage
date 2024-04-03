@@ -416,6 +416,159 @@ export class WebICGApiClient implements IWebICGAPIClient {
     }
     return Promise.resolve(null as any);
   }
+
+  async register_purchase(userid: string, couponid: number) {
+    let url_ = this.baseUrl + "/createpurchase";
+    url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify({userid: userid, coupon_id: couponid});
+    console.log("sending: " + content_);
+    let options_: RequestInit = {
+      body: content_,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processRegister_purchase(_response);
+    });
+  }
+
+  protected processRegister_purchase(response: Response) {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach(
+        (value: any, key: any) => (_headers[key] = value)
+      );
+    }
+    if (status == 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 =
+          _responseText === ""
+            ? null
+            : _responseText
+        console.log("result201: " + resultData200);
+        return resultData200;
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          "An unexpected server error ocurred.",
+          status,
+          _responseText,
+          _headers
+        );
+      });
+    }
+    return Promise.resolve(null as any);
+  }
+
+  async get_purchases(userid: string): Promise<Coupon[]> {
+    let url_ = this.baseUrl + "/getpurchases";
+    url_ = url_.replace(/[?&]$/, "");
+
+    const content_ = JSON.stringify({userid: userid});
+    console.log("sending: " + content_);
+    let options_: RequestInit = {
+      body: content_,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+    };
+
+    return this.http.fetch(url_, options_).then((_response: Response) => {
+      return this.processGet_purchases(_response);
+    });
+  }
+
+  protected processGet_purchases(response: Response): Promise<Coupon[]> {
+    const status = response.status;
+    let _headers: any = {};
+    if (response.headers && response.headers.forEach) {
+      response.headers.forEach(
+        (value: any, key: any) => (_headers[key] = value)
+      );
+    }
+    if (status == 200) {
+      return response.text().then((_responseText) => {
+        let result200: any = null;
+        let resultData200 =
+          _responseText === ""
+            ? null
+            : JSON.parse(_responseText, this.jsonParseReviver);
+        const coupons: Coupon[] = [];
+        for (const jsonObj of resultData200) {
+          const userid = jsonObj.userid;
+          const couponid = jsonObj.couponid;
+          let data = { userid: userid, couponid: couponid };
+          console.log("restype: " + data);
+          console.log("resres: " + JSON.stringify(data))
+          const coupon = Coupon.fromJS(resultData200);
+          coupons.push(coupon);
+        }
+        console.log("result201: " + resultData200);
+        return coupons;
+      });
+    } else if (status !== 200 && status !== 204) {
+      return response.text().then((_responseText) => {
+        return throwException(
+          "An unexpected server error ocurred.",
+          status,
+          _responseText,
+          _headers
+        );
+      });
+    }
+    return Promise.resolve<Coupon[]>(null as any);
+  }
+}
+
+export class Coupon implements ICoupon {
+  userid?: string | undefined;
+  couponid?: number;
+
+  constructor(data?: ICoupon) {
+    if (data) {
+      for (var property in data) {
+        if (data.hasOwnProperty(property)) {
+          (<any>this)[property] = (<any>data)[property];
+        }
+      }
+    }
+  }
+
+  init(_data?: any) {
+    if (_data) {
+      this.userid = _data["userid"];
+      this.couponid = _data["couponid"];
+    }
+  }
+
+  static fromJS(data: any): Coupon {
+    data = typeof data === "object" ? data : {};
+    let result = new Coupon();
+    result.init(data);
+    return result;
+  }
+
+  toJSON(data?: any) {
+    data = typeof data === "object" ? data : {};
+    data["userid"] = this.userid;
+    data["couponid"] = this.couponid;
+    return data;
+  }
+}
+
+export interface ICoupon {
+  userid?: string;
+  couponid?: number;
 }
 
 export interface IUpdatePointsInstance {

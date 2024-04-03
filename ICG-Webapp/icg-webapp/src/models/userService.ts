@@ -74,7 +74,25 @@ export class UserService {
       let res = await ApiService.client().update_points(userid, points, isSubtract);
       return res
     } catch (e) {
-      console.log("Updatepoints error: " + e)
+      console.log("Updatepoints error: " + e);
+    }
+  }
+
+  async RegisterPurchase(userid: string, couponid: number){
+    try {
+      let res = await ApiService.client().register_purchase(userid, couponid);
+      return res
+    } catch (e) {
+      console.log("Error registering puchase: " + e);
+    }
+  }
+
+  async getPurchases(userid: string) {
+    try {
+      let res = await ApiService.client().get_purchases(userid)
+      return res
+    } catch (e) {
+      console.log("Error getting purchases: " + e);
     }
   }
 }
