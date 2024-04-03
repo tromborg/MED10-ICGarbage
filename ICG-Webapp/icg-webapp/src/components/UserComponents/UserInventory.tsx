@@ -52,7 +52,7 @@ const UserInventory: FunctionComponent = () => {
         const matches = cardData.filter(obj => couponids!.includes(obj.id));
         console.log("copiuns:; " + coupons[0].couponid);
         console.log("ids: " + couponids);
-        console.log("match: " + matches);
+        console.log("match: " + matches[0].title);
 
       }
       

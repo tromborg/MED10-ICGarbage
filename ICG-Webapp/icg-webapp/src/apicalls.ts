@@ -510,7 +510,7 @@ export class WebICGApiClient implements IWebICGAPIClient {
           let data = { userid: userid, couponid: couponid };
           console.log("restype: " + data);
           console.log("resres: " + JSON.stringify(data))
-          const coupon = Coupon.fromJS(resultData200);
+          const coupon = Coupon.fromJS(jsonObj);
           coupons.push(coupon);
         }
         console.log("result201: " + resultData200);
