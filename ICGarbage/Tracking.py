@@ -3,7 +3,7 @@ import cv2
 
 class Tracking():
     def __init__(self, fps):
-        self.model = YOLO("grappermodel.pt")
+        self.model = YOLO("grabbermodelpt2.pt")
         self.closeCounter = 0
         self.closeTimer = 0
         self.closed = False
@@ -36,10 +36,12 @@ class Tracking():
     def trackGrabber(self, frame, startX):
         self.getFrame = False
         x2 = 0
-        bbox = self.model(frame, stream=True, conf=0.8, verbose=False)
+        bbox = self.model(frame, stream=True, conf=0.4, verbose=False)
         for result in bbox:
             if len(result) > 0:
                 x2 = int(result.boxes.xyxy[0][2])
+                #cv2.rectangle(frame,(int(result.boxes.xyxy[0][0]), int(result.boxes.xyxy[0][1])),(int(result.boxes.xyxy[0][2]),int(result.boxes.xyxy[0][3])),(0,255,0))
+        cv2.imshow("rect", frame)
         if x2 > startX + 30 and self.closed == False:
             self.grabbersClosing = True
             self.closeCounter += 1

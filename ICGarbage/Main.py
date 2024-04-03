@@ -16,7 +16,7 @@ if __name__ == '__main__':
     # ---VARIABLES---#
     frameCount = 0
     check = True
-    cap = cv2.VideoCapture('City_All.mp4')
+    cap = cv2.VideoCapture('GX010081.MP4')
     fps = int(round(cap.get(cv2.CAP_PROP_FPS),0))
     ret, frame = cap.read()
     fiftyFrame = []

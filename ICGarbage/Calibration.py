@@ -12,7 +12,7 @@ class Calibration():
         self.left_bboxes = []
         self.right_bboxes = []
         self.framecount = 0
-        self.model_path = "grappermodel.pt"
+        self.model_path = "grabbermodelpt2.pt"
         self.grabber_model = YOLO(self.model_path)
         self.is_gathering_frames = True
     def get_grabber_preds(self, frame, framecount):

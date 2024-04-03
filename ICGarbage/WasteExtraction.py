@@ -39,7 +39,7 @@ class WasteExtraction:
         screenSize = fiftyFrame[0].shape[1] / 3
         imageArray = fiftyFrame
         grabberXArrayminus40 = grabberXArray
-        yoloResults = model(imageArray, conf=0.4)
+        yoloResults = model(imageArray, conf=0.6)
         frameNumber = 0
         validResults = []
         validFrames = []
@@ -95,18 +95,25 @@ class WasteExtraction:
                 self.prevImg = finalImage[int(biggestbox.boxes.xyxy[0][1]):int(biggestbox.boxes.xyxy[0][3]),
                             int(biggestbox.boxes.xyxy[0][0]):int(biggestbox.boxes.xyxy[0][2])]
             else:
-                hash1 = imagehash.average_hash(Image.fromarray(finalImage))
+                finalImageROI = []
+                finalImageROI = finalImage[int(biggestbox.boxes.xyxy[0][1]):int(biggestbox.boxes.xyxy[0][3]),
+                            int(biggestbox.boxes.xyxy[0][0]):int(biggestbox.boxes.xyxy[0][2])]
+                hash1 = imagehash.average_hash(Image.fromarray(finalImageROI))
                 hash2 = imagehash.average_hash(Image.fromarray(self.prevImg))
-                self.hashVal = hash1 - hash2
+                self.hashVal = hash2 - hash1
                 print("hashVal: ", self.hashVal)
                 self.prevImg = finalImage[int(biggestbox.boxes.xyxy[0][1]):int(biggestbox.boxes.xyxy[0][3]),
                             int(biggestbox.boxes.xyxy[0][0]):int(biggestbox.boxes.xyxy[0][2])]
             if finalImage is not None and self.hashVal > 5:
                 cv2.rectangle(finalImage, (int(biggestbox.boxes.xyxy[0][0]), int(biggestbox.boxes.xyxy[0][1])),
-                              (int(biggestbox.boxes.xyxy[0][2]), int(biggestbox.boxes.xyxy[0][3])), (0, 255, 0), thickness=2)
+                              (int(biggestbox.boxes.xyxy[0][2]), int(biggestbox.boxes.xyxy[0][3])), (0, 255, 0), thickness=1)
                 cv2.imwrite("testImages/test" + str(self.imNum) + ".png", finalImage)
                 f1 = open("yolotxt/" + str(self.imNum) + ".txt", "w+")
                 f1.write("bbox: " + str(biggestbox.boxes.xyxy[0][0]) + " " + str(biggestbox.boxes.xyxy[0][1]) + " " + str(biggestbox.boxes.xyxy[0][2]) + " " + str(biggestbox.boxes.xyxy[0][3]))
                 f1.close()
                 self.imNum += 1
+                self.hashVal = 0
+            else:
+                print("get hashed")
+                self.hashVal = 0
         self.movement = True
