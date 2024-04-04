@@ -1,6 +1,6 @@
-import { Container, Card, CardBody, HStack, Text, TableContainer, Table, Thead, Tr, Th, Tbody, Td, VStack, ResponsiveValue, color, Box, Heading, Center } from "@chakra-ui/react";
+import { Container, Card, CardBody, HStack, Text, VStack, Box, Heading, Center } from "@chakra-ui/react";
 import { FunctionComponent, useState, useEffect } from "react";
-import { IUserRegistry, UserRegistry } from "../../apicalls";
+import { IUserRegistry } from "../../apicalls";
 import { ApiService } from "../../services/ApiService";
 import themes from '../../design/themes';
 import { userSessionDb } from '../SessionDB';
@@ -35,9 +35,12 @@ const GlobalLeaderboard : FunctionComponent = () => {
     return (
             <Container>
                 <Center pb={"1em"}>
-                    <Heading justifySelf={"center"} color={themes.adobePalette.darker}>
-                        LEADERBOARD
-                    </Heading>
+                    <VStack>
+                        <Heading justifySelf={"center"} color={themes.adobePalette.darker}>
+                            LEADERBOARD
+                        </Heading>
+                        <Heading as={"h3"} size={"l"} justifySelf={"center"} color={themes.adobePalette.darkest}> Her kan du se de bedste indsamlere i Danmark! </Heading>
+                    </VStack>
                 </Center>
                 {userData?.map((user, index) => {
                         let rowColour = themes.primaryColours.white;

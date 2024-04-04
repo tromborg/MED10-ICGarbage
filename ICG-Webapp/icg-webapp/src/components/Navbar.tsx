@@ -32,7 +32,7 @@ const Navbar = () => {
     >
       <NavLink to={urls.home}>
         <Box>
-          <Heading color={themes.adobePalette.darker}>ICWasteDK</Heading>
+          <Heading color={themes.adobePalette.darker}>ICWaste</Heading>
         </Box>
       </NavLink>
       {!isLoggedIn ? (
