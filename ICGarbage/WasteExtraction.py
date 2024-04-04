@@ -51,15 +51,12 @@ class WasteExtraction:
         for result in yoloResults:
             if len(result.boxes) > 0:
                 if int(result.boxes.xyxy[0][0]) < leftbbox[2] and int(result.boxes.xyxy[0][3]) > leftbbox[1]:
-                    print("leftX: ", int(result.boxes.xyxy[0][0]), "leftY: ", int(result.boxes.xyxy[0][3]))
                     frameNumber += 1
                     continue
                 if int(result.boxes.xyxy[0][2]) > rightbbox[0] and int(result.boxes.xyxy[0][3]) > rightbbox[1]:
-                    print("rightX: ", int(result.boxes.xyxy[0][2]), "rightY: ", int(result.boxes.xyxy[0][3]))
                     frameNumber += 1
                     continue
                 if grabberXArrayminus40[frameNumber] - 30 > grabberStartX:
-                    print("grabberxareray: ", grabberXArrayminus40[frameNumber])
                     frameNumber += 1
                     continue
                 if int(result.boxes.xyxy[0][0]) > screenSize and int(result.boxes.xyxy[0][2]) < fiftyFrame[0].shape[1] - screenSize and int(result.boxes.xyxy[0][3]) < fiftyFrame[0].shape[0]-80 and int(result.boxes.xyxy[0][1]) > 80:
@@ -104,9 +101,10 @@ class WasteExtraction:
                 print("hashVal: ", self.hashVal)
                 self.prevImg = finalImage[int(biggestbox.boxes.xyxy[0][1]):int(biggestbox.boxes.xyxy[0][3]),
                             int(biggestbox.boxes.xyxy[0][0]):int(biggestbox.boxes.xyxy[0][2])]
+            print("finaliamge: ", finalImage)
             if finalImage is not None and self.hashVal > 5:
                 cv2.rectangle(finalImage, (int(biggestbox.boxes.xyxy[0][0]), int(biggestbox.boxes.xyxy[0][1])),
-                              (int(biggestbox.boxes.xyxy[0][2]), int(biggestbox.boxes.xyxy[0][3])), (0, 255, 0), thickness=1)
+                              (int(biggestbox.boxes.xyxy[0][2]), int(biggestbox.boxes.xyxy[0][3])), (0, 0, 255), thickness=2)
                 cv2.imwrite("testImages/test" + str(self.imNum) + ".png", finalImage)
                 f1 = open("yolotxt/" + str(self.imNum) + ".txt", "w+")
                 f1.write("bbox: " + str(biggestbox.boxes.xyxy[0][0]) + " " + str(biggestbox.boxes.xyxy[0][1]) + " " + str(biggestbox.boxes.xyxy[0][2]) + " " + str(biggestbox.boxes.xyxy[0][3]))

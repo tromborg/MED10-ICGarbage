@@ -1,1 +1,1 @@
-bbox: tensor(879.6429) tensor(453.5272) tensor(1180.0255) tensor(663.2963)
+bbox: tensor(1027.6077) tensor(136.8346) tensor(1238.6254) tensor(563.7085)
