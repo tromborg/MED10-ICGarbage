@@ -20,7 +20,7 @@ import { useState, useEffect } from "react";
 import { UserService } from "../models/UserService";
 import { userSessionDb } from "../components/SessionDB";
 import { ApiService } from "../services/ApiService";
-import { UserRegistry } from "../apicalls";
+import { UserOverview, UserRegistry } from "../apicalls";
 import { cardData, Card } from "../components/CardData";
 
 const ShopPage = () => {
@@ -30,29 +30,29 @@ const ShopPage = () => {
 
   const [selectedCard, setSelectedCard] = useState<Card | undefined>();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [userPoints, setUserPoints] = useState<UserRegistry[]>();
+  const [userPoints, setUserPoints] = useState<UserOverview>();
   const [cardWidth, setCardWidth] = useState<string>("30%");
   const [cardWidthInt, setCardWidthInt] = useState<number>(30);
   const toast = useToast()
 
   const getUserBalance = async () => {
     let user = await userSessionDb.getUserFromSessionDb();
-    const scoreboardData = await ApiService.client().get_scoreboard();
-    console.log("scoreboard: ", scoreboardData);
+    const useroverview = await ApiService.client().get_useroverview(user.userId!);
+    console.log("useroverview: ", useroverview);
     setUserPoints(
-      scoreboardData.filter((users) => users.userid === user.userId)
+      useroverview
     );
   };
 
   const handlePurchase = async (points: number, couponid: number) => {
     if (userPoints){
-      if(userPoints[0].points! > points){
+      if(userPoints.points! > points){
         let userservice = new UserService()
         console.log("Bought");
-        console.log("Balance: " + userPoints[0].points!)
+        console.log("Balance: " + userPoints.points!)
         console.log("Cost: " + points);
-        userservice.UpdatePoints(userPoints[0].userid!, points, true);
-        userservice.RegisterPurchase(userPoints[0].userid!, couponid);
+        userservice.UpdatePoints(userPoints.userid!, points, true);
+        userservice.RegisterPurchase(userPoints.userid!, couponid);
         onClose();
         return (
           toast({
@@ -117,7 +117,7 @@ const ShopPage = () => {
           <Text fontSize={30}>
             Balance:{" "}
             <span style={{ color: "#5AB463" }}>
-              {userPoints ? userPoints[0].points : "0"} point
+              {userPoints ? userPoints.points : "0"} point
             </span>{" "}
           </Text>
         </Box>
