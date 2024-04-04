@@ -1,22 +1,26 @@
 import { FunctionComponent } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Heading,
-  Container,
   Divider,
   Text,
   Box,
   Flex,
   VStack,
   HStack,
-  Center
+  Button
 } from "@chakra-ui/react";
-import LogoSvg from "../design/logo/png/logo-no-background.png";
-import UploadComponent from "../components/UploadComponent";
 import themes from "../design/themes";
 import "../index.css";
 import bgvideo from "../media/GL010031.mp4";
+import urls from "../components/urls";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import LogoSvg from "../design/logo/svg/logo-no-background.svg";
 
 const Home: FunctionComponent = () => {
+  const navigate = useNavigate();
+  const isLoggedIn = useSelector((state: RootState) => state.login.isLoggedIn);
   return (
     <Flex>
       <VStack>
@@ -34,10 +38,26 @@ const Home: FunctionComponent = () => {
             </Box>
           </Box>
         </Flex>
-        <Flex maxWidth={"100%"} pt={"2em"} pb={"2em"}>
-          <UploadComponent/>
+        <Flex maxWidth={"100%"} pt={"1em"} pb={"1em"} >
+          <VStack>
+              <VStack>
+                <Heading size={"xl"} textColor={themes.adobePalette.darkest}>Start din hjælp i dag!</Heading>
+                <Text fontSize={"25px"} fontWeight={600} textColor={themes.adobePalette.evenDarker} pb={"1em"}>Opret en bruger i dag og kom i gang med at uploade videoer af din indsamling</Text>
+                <Button 
+                  backgroundColor={themes.adobePalette.darker} 
+                  size={"lg"} 
+                  _hover={{ bg: themes.adobePalette.main }}
+                  onClick={()=>{
+                    isLoggedIn ? navigate(urls.users) : navigate(urls.login)
+                  }}
+                
+                ><Text textColor={themes.primaryColours.white}>Klik her for at komme i gang</Text></Button>
+              </VStack>
+              
+          </VStack>
         </Flex >
-        <Flex backgroundColor={themes.adobePalette.darker}>
+        <Flex backgroundColor={themes.adobePalette.darker} className="homeoverlay" >
+          <Box />
           <HStack pt={"1em"} pb={"1em"} justifyContent={"space-around"}>
               <VStack maxWidth={"30%"} >
                 <Heading as={"h2"} size={"xl"} alignSelf={"flex-start"} textColor={themes.primaryColours.white}>Støt op om en renere natur</Heading>
