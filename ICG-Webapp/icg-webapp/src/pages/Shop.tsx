@@ -49,6 +49,8 @@ const ShopPage = () => {
       if(userPoints[0].points! > points){
         let userservice = new UserService()
         console.log("Bought");
+        console.log("Balance: " + userPoints[0].points!)
+        console.log("Cost: " + points);
         userservice.UpdatePoints(userPoints[0].userid!, points, true);
         userservice.RegisterPurchase(userPoints[0].userid!, couponid);
         onClose();

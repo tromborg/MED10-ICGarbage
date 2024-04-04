@@ -27,12 +27,12 @@ import { userSessionDb } from "../SessionDB";
 import { Coupon } from "../../apicalls";
 
 const UserInventory: FunctionComponent = () => {
-    const [selectedItem, setSelectedItem] = useState<string | null>(null);
     const [cardWidth, setCardWidth] = useState<string>("30%");
     const [cardWidthInt, setCardWidthInt] = useState<number>(30);
     const [selectedCard, setSelectedCard] = useState<Card | undefined>();
     const { isOpen, onOpen, onClose } = useDisclosure();
     const carddata: Card[] = cardData as Card[]
+    const [purchases, setPurchases] = useState<Card[] | undefined >();
 
     const handleCardClick = (card: Card) => {
       setSelectedCard(card);
@@ -42,6 +42,8 @@ const UserInventory: FunctionComponent = () => {
    const handleCouponUse = (couponid: number) => {
     console.log("Used id: " + couponid);
    }
+
+   
    const getPurchasedCoupons = async () => {
       let userService = new UserService();
       let user = await userSessionDb.getUserFromSessionDb();
@@ -50,10 +52,7 @@ const UserInventory: FunctionComponent = () => {
       if(coupons){
         const couponids = coupons?.map(coupon => coupon.couponid);
         const matches = cardData.filter(obj => couponids!.includes(obj.id));
-        console.log("copiuns:; " + coupons[0].couponid);
-        console.log("ids: " + couponids);
-        console.log("match: " + matches[0].title);
-
+        setPurchases(matches as Card[]);
       }
       
    }
@@ -102,7 +101,7 @@ const UserInventory: FunctionComponent = () => {
         justifyContent={cardWidthInt <= 23 ? "flex-start" : "center"}
         wrap="wrap"
       >
-        {carddata.map((card, index) => (
+        {purchases?.map((card, index) => (
           <Flex
             key={index}
             width={cardWidth}
