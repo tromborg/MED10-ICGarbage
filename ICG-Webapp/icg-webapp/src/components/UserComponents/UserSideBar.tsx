@@ -70,6 +70,19 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
             <Text color="#31572c">Brugeroversigt</Text>
           </Link>
           <Link
+            href="#uploadpage"
+            p="2"
+            _hover={{ bg: themes.adobePalette.main }}
+            borderRadius={5}
+            onClick={() => onClick("uploadpage", "upload")}
+            backgroundColor={
+              activePage === "upload" ? themes.adobePalette.main : ""
+            }
+          >
+            <Icon as={MdOutlineMoving} mr={2} mb={-0.5} />
+            Upload Videoer
+          </Link>
+          <Link
             href="#userstatistics"
             p="2"
             _hover={{ bg: themes.adobePalette.main }}

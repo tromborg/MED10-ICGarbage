@@ -38,7 +38,7 @@ const Home: FunctionComponent = () => {
             </Box>
           </Box>
         </Flex>
-        <Flex maxWidth={"100%"} pt={"1em"} pb={"1em"} >
+        <Flex maxWidth={"100%"} pt={"3em"} pb={"3em"} >
           <VStack>
               <VStack>
                 <Heading size={"xl"} textColor={themes.adobePalette.darkest}>Start din hjælp i dag!</Heading>

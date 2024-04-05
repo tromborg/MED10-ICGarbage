@@ -13,6 +13,7 @@ import UserOverviewPage from "../components/UserComponents/UserOverviewPage";
 import UserStatistics from "../components/UserComponents/UserStatistics";
 import GlobalLeaderboard from "../components/UserComponents/GlobalLeaderboard";
 import UserInventory from "../components/UserComponents/UserInventory";
+import UploadPage from "../components/UserComponents/UploadPage";
 
 const Users: FunctionComponent = () => {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -34,6 +35,9 @@ const Users: FunctionComponent = () => {
       break;
     case "userinventory":
       content = <UserInventory />;
+      break;
+    case "uploadpage":
+      content = <UploadPage />
       break;
     default:
       content = <UserOverviewPage />;
