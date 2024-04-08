@@ -13,6 +13,7 @@ import {
   MdOutlineMoving,
   MdLeaderboard,
   MdCardGiftcard,
+  MdCloudUpload,
 } from "react-icons/md";
 interface SidebarProps {
   onItemClick: (item: string) => void;
@@ -37,15 +38,17 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
 
   return (
     <Flex
-      bg={"#99d98c"}
-      color="white"
-      w="13%"
-      h="93%"
-      position="fixed"
+      bg={"#edf2f4"}
+      color="#2b2d42"
+      w="100%"
+      h="100%"
       p="4"
       borderRadius={5}
+      borderWidth={1}
       flexDirection="column"
       justifyContent="space-between"
+      m={1}
+      ml={2}
     >
       <Flex flexDirection="column">
         <Flex align="center" mb="4" justifyContent="center">
@@ -57,40 +60,43 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
           <Link
             href="#useroverview"
             p="2"
-            _hover={{ bg: themes.adobePalette.main }}
+            _hover={{ bg: themes.primaryColours.white }}
             borderRadius={5}
             onClick={() => onClick("useroverview", "brugeroversigt")}
             backgroundColor={
-              activePage === "brugeroversigt" ? themes.adobePalette.main : ""
+              activePage === "brugeroversigt" ? themes.primaryColours.white : ""
             }
             display="flex"
             alignItems="center"
+            boxShadow={activePage === "brugeroversigt" ? "base" : ""}
           >
             <Icon color="black" mr={2} mb={-0.5} as={MdDvr} />
-            <Text color="#31572c">Brugeroversigt</Text>
+            <Text>Brugeroversigt</Text>
           </Link>
           <Link
             href="#uploadpage"
             p="2"
-            _hover={{ bg: themes.adobePalette.main }}
+            _hover={{ bg: themes.primaryColours.white }}
             borderRadius={5}
             onClick={() => onClick("uploadpage", "upload")}
             backgroundColor={
-              activePage === "upload" ? themes.adobePalette.main : ""
+              activePage === "upload" ? themes.primaryColours.white : ""
             }
+            boxShadow={activePage === "upload" ? "base" : ""}
           >
-            <Icon as={MdOutlineMoving} mr={2} mb={-0.5} />
+            <Icon as={MdCloudUpload} mr={2} mb={-0.5} />
             Upload Videoer
           </Link>
           <Link
             href="#userstatistics"
             p="2"
-            _hover={{ bg: themes.adobePalette.main }}
+            _hover={{ bg: themes.primaryColours.white }}
             borderRadius={5}
             onClick={() => onClick("userstatistics", "statistikker")}
             backgroundColor={
-              activePage === "statistikker" ? themes.adobePalette.main : ""
+              activePage === "statistikker" ? themes.primaryColours.white : ""
             }
+            boxShadow={activePage === "statistikker" ? "base" : ""}
           >
             <Icon as={MdOutlineMoving} mr={2} mb={-0.5} />
             Statistikker
@@ -98,12 +104,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
           <Link
             href="#globalleaderboard"
             p="2"
-            _hover={{ bg: themes.adobePalette.main }}
+            _hover={{ bg: themes.primaryColours.white }}
             borderRadius={5}
             onClick={() => onClick("globalleaderboard", "leaderboard")}
             backgroundColor={
-              activePage === "leaderboard" ? themes.adobePalette.main : ""
+              activePage === "leaderboard" ? themes.primaryColours.white : ""
             }
+            boxShadow={activePage === "leaderboard" ? "base" : ""}
           >
             <Icon mr={2} mb={-0.5} as={MdLeaderboard} />
             Globalt Leaderboard
@@ -111,12 +118,13 @@ const Sidebar: React.FC<SidebarProps> = ({ onItemClick }) => {
           <Link
             href="#userinventory"
             p="2"
-            _hover={{ bg: themes.adobePalette.main }}
+            _hover={{ bg: themes.primaryColours.white }}
             borderRadius={5}
             onClick={() => onClick("userinventory", "minekuponer")}
             backgroundColor={
-              activePage === "minekuponer" ? themes.adobePalette.main : ""
+              activePage === "minekuponer" ? themes.primaryColours.white : ""
             }
+            boxShadow={activePage === "minekuponer" ? "base" : ""}
           >
             <Icon mr={2} mb={-0.5} as={MdCardGiftcard} />
             Mine Kuponer

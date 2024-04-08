@@ -18,7 +18,7 @@ const NavButtonStyle = {
 
 const Navbar = () => {
   const isLoggedIn = useSelector((state: RootState) => state.login.isLoggedIn);
-  const [isHoverColor, setIsHoverColor] = useState(themes.adobePalette.darker)
+  const [isHoverColor, setIsHoverColor] = useState(themes.adobePalette.darker);
   return (
     <Flex
       as="nav"
@@ -29,6 +29,7 @@ const Navbar = () => {
       backgroundColor={themes.primaryColours.white}
       pb={"1em"}
       pt={"1em"}
+      borderBottomWidth={1}
     >
       <NavLink to={urls.home}>
         <Box>
@@ -37,30 +38,43 @@ const Navbar = () => {
       </NavLink>
       {!isLoggedIn ? (
         <HStack gap={"2em"}>
-          <NavLink to={urls.home} >
-            <Box sx={NavButtonStyle}><Heading fontSize={"l"}> Home </Heading> </Box>
+          <NavLink to={urls.home}>
+            <Box sx={NavButtonStyle}>
+              <Heading fontSize={"l"}> Home </Heading>{" "}
+            </Box>
           </NavLink>
           <NavLink to={urls.login}>
-            <Box sx={NavButtonStyle}><Heading fontSize={"l"}> Login </Heading></Box>
+            <Box sx={NavButtonStyle}>
+              <Heading fontSize={"l"}> Login </Heading>
+            </Box>
           </NavLink>
           <NavLink to={urls.about}>
-            <Box sx={NavButtonStyle}><Heading fontSize={"l"}> About </Heading></Box>
+            <Box sx={NavButtonStyle}>
+              <Heading fontSize={"l"}> About </Heading>
+            </Box>
           </NavLink>
         </HStack>
-        
       ) : (
         <HStack gap={"2em"}>
           <NavLink to={urls.home}>
-            <Box sx={NavButtonStyle}><Heading fontSize={"l"}> Home </Heading></Box>
+            <Box sx={NavButtonStyle}>
+              <Heading fontSize={"l"}> Home </Heading>
+            </Box>
           </NavLink>
           <NavLink to={urls.users}>
-            <Box sx={NavButtonStyle}><Heading fontSize={"l"}> Users </Heading></Box>
+            <Box sx={NavButtonStyle}>
+              <Heading fontSize={"l"}> Users </Heading>
+            </Box>
           </NavLink>
           <NavLink to={urls.shop}>
-            <Box sx={NavButtonStyle}><Heading fontSize={"l"}> Shop </Heading></Box>
+            <Box sx={NavButtonStyle}>
+              <Heading fontSize={"l"}> Shop </Heading>
+            </Box>
           </NavLink>
           <NavLink to={urls.about}>
-            <Box sx={NavButtonStyle}><Heading fontSize={"l"}> About</Heading></Box>
+            <Box sx={NavButtonStyle}>
+              <Heading fontSize={"l"}> About</Heading>
+            </Box>
           </NavLink>
         </HStack>
       )}

@@ -7,6 +7,7 @@ import {
   MenuItem,
   Container,
   Flex,
+  Box,
 } from "@chakra-ui/react";
 import Sidebar from "../components/UserComponents/UserSideBar";
 import UserOverviewPage from "../components/UserComponents/UserOverviewPage";
@@ -14,6 +15,8 @@ import UserStatistics from "../components/UserComponents/UserStatistics";
 import GlobalLeaderboard from "../components/UserComponents/GlobalLeaderboard";
 import UserInventory from "../components/UserComponents/UserInventory";
 import UploadPage from "../components/UserComponents/UploadPage";
+import themes from "../design/themes";
+import bg from "../design/picker.png";
 
 const Users: FunctionComponent = () => {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -37,17 +40,21 @@ const Users: FunctionComponent = () => {
       content = <UserInventory />;
       break;
     case "uploadpage":
-      content = <UploadPage />
+      content = <UploadPage />;
       break;
     default:
       content = <UserOverviewPage />;
   }
 
   return (
-    <Flex width="100%">
-      <Sidebar onItemClick={handleItemClick} />
-      <Container maxW="87%" mt="20px" ml="250px">
-        {content}
+    <Flex width="100%" h="92vh" bgGradient="linear(to-br, white, #499250)">
+      <Flex w="13%">
+        <Sidebar onItemClick={handleItemClick} />
+      </Flex>
+      <Container maxW="87%" pl={-1} pr={-1}>
+        <Box w="100%" h="100%">
+          {content}
+        </Box>
       </Container>
     </Flex>
   );
