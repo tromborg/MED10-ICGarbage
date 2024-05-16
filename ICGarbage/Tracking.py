@@ -11,6 +11,7 @@ class Tracking():
         self.grabbersClosing = False
         self.getFrame = False
         self.downtime = 7 * fps
+        self.fakeClosings = 0
 
     def grabbersClosedChecker(self):
         if self.closed == True:
@@ -31,6 +32,8 @@ class Tracking():
             print("not closing")
             self.closeCounter = 0
             self.closeTimer = 0
+            self.fakeClosings += 1
+            print("Fake closings: " + str(self.fakeClosings))
             return False
 
     def trackGrabber(self, frame, startX):

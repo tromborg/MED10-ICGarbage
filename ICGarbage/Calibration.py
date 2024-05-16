@@ -96,6 +96,7 @@ class Calibration():
         best_left_box = [int(best_left_x1/len(self.left_bboxes)), int(best_left_y1/len(self.left_bboxes)), int(best_left_x2/len(self.left_bboxes)), int(best_left_y2/len(self.left_bboxes))]
         best_right_box = [int(best_right_x1/len(self.right_bboxes)), int(best_right_y1/len(self.right_bboxes)), int(best_right_x2/len(self.right_bboxes)), int(best_right_y2/len(self.right_bboxes))]
         print("Best box: ", best_left_box)
+
         print("x2: ", int(np.average(best_left_x2)))
         print("x1: ", int(np.average(best_left_x2)))
         tracking_roi = self.get_tracking_roi(left_box=best_left_box, right_box=best_right_box)

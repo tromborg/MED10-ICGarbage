@@ -22,6 +22,9 @@ class WasteExtraction:
         self.minBlurVal = 0
         self.prevImg = []
         self.hashVal = 6
+        self.count = 0
+        self.closingEvent = 0
+
 
 
     def getROI(self, currentFrame):
@@ -47,24 +50,61 @@ class WasteExtraction:
         validPairs = []
         resultsArray = []
         finalImage = None
+        index = 0
+        frameNumber1 = 0
+        failCounter = 0
 
+        self.closingEvent += 1
+        print("closings: ", self.closingEvent)
+
+        #imageroi = imageArray[1][0:leftbbox[3],0:imageArray[1].shape[1]]
+
+        print("framenumber1111: ", frameNumber1)
         for result in yoloResults:
+            print("yololength: ", len(yoloResults))
+            frameNumber1 += 1
             if len(result.boxes) > 0:
-                if int(result.boxes.xyxy[0][0]) < leftbbox[2] and int(result.boxes.xyxy[0][3]) > leftbbox[1]:
-                    frameNumber += 1
-                    continue
-                if int(result.boxes.xyxy[0][2]) > rightbbox[0] and int(result.boxes.xyxy[0][3]) > rightbbox[1]:
-                    frameNumber += 1
-                    continue
-                if grabberXArrayminus40[frameNumber] - 30 > grabberStartX:
-                    frameNumber += 1
-                    continue
-                if int(result.boxes.xyxy[0][0]) > screenSize and int(result.boxes.xyxy[0][2]) < fiftyFrame[0].shape[1] - screenSize and int(result.boxes.xyxy[0][3]) < fiftyFrame[0].shape[0]-80 and int(result.boxes.xyxy[0][1]) > 80:
-                    resultsPair = (result, fiftyFrame[frameNumber])
-                    validPairs.append(resultsPair)
-                    validResults.append(result)
-                    validFrames.append(fiftyFrame[frameNumber])
+                for i in range(0,len(result.boxes)):
+
+                    if int(result.boxes.xyxy[i][0]) < leftbbox[2] - 30 and int(result.boxes.xyxy[i][3]) > leftbbox[1]:
+                        frameNumber += 1
+                        self.count += 1
+                        failCounter += 1
+                        print("hej1: ", self.count)
+                        cv2.rectangle(imageArray[index], (int(result.boxes.xyxy[0][0]), int(result.boxes.xyxy[0][1])),
+                                      (int(result.boxes.xyxy[0][2]), int(result.boxes.xyxy[0][3])), (0, 0, 255),
+                                      thickness=2)
+                        cv2.imwrite("fails/fail" + str(self.imNum) + "n" + str(self.count) + ".png", imageArray[index])
+                        continue
+                    if int(result.boxes.xyxy[i][2]) > rightbbox[0] + 30 and int(result.boxes.xyxy[i][3]) > rightbbox[1]:
+                        frameNumber += 1
+                        self.count += 1
+                        failCounter += 1
+                        print("hej2", self.count)
+                        cv2.rectangle(imageArray[index], (int(result.boxes.xyxy[0][0]), int(result.boxes.xyxy[0][1])),
+                                      (int(result.boxes.xyxy[0][2]), int(result.boxes.xyxy[0][3])), (0, 0, 255),
+                                      thickness=2)
+                        cv2.imwrite("fails/fail" + str(self.imNum) + "n" + str(self.count) + ".png", imageArray[index])
+                        continue
+                    if grabberXArrayminus40[frameNumber1 - 1] - 30 > grabberStartX:
+                        frameNumber += 1
+                        self.count += 1
+                        failCounter += 1
+                        print("hej3", self.count)
+                        cv2.rectangle(imageArray[index], (int(result.boxes.xyxy[0][0]), int(result.boxes.xyxy[0][1])),
+                                      (int(result.boxes.xyxy[0][2]), int(result.boxes.xyxy[0][3])), (0, 0, 255),
+                                      thickness=2)
+                        cv2.imwrite("fails/fail" + str(self.imNum) + "n" + str(self.count) + ".png", imageArray[index])
+                        continue
+                    if int(result.boxes.xyxy[i][0]) > screenSize and int(result.boxes.xyxy[i][2]) < fiftyFrame[0].shape[1] - screenSize and int(result.boxes.xyxy[i][3]) < fiftyFrame[i].shape[0]-80 and int(result.boxes.xyxy[i][1]) > 80:
+                        resultsPair = (result, fiftyFrame[frameNumber1 - 1])
+                        validPairs.append(resultsPair)
+                        validResults.append(result)
+                        validFrames.append(fiftyFrame[frameNumber1 - 1])
             frameNumber += 1
+            index += 1
+            if failCounter >= 420:
+                cv2.imwrite("failedTrash/fail" + str(self.imNum) + ".png", imageArray[410])
         if len(validResults) > 0:
             print("length: ", len(validResults))
             for i in range(0,len(validResults)):
@@ -95,8 +135,8 @@ class WasteExtraction:
                 finalImageROI = []
                 finalImageROI = finalImage[int(biggestbox.boxes.xyxy[0][1]):int(biggestbox.boxes.xyxy[0][3]),
                             int(biggestbox.boxes.xyxy[0][0]):int(biggestbox.boxes.xyxy[0][2])]
-                hash1 = imagehash.average_hash(Image.fromarray(finalImageROI))
-                hash2 = imagehash.average_hash(Image.fromarray(self.prevImg))
+                hash1 = imagehash.dhash(Image.fromarray(finalImageROI))
+                hash2 = imagehash.dhash(Image.fromarray(self.prevImg))
                 self.hashVal = hash2 - hash1
                 print("hashVal: ", self.hashVal)
                 self.prevImg = finalImage[int(biggestbox.boxes.xyxy[0][1]):int(biggestbox.boxes.xyxy[0][3]),

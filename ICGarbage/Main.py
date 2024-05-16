@@ -16,7 +16,7 @@ if __name__ == '__main__':
     # ---VARIABLES---#
     frameCount = 0
     check = True
-    cap = cv2.VideoCapture('GX010081.MP4')
+    cap = cv2.VideoCapture('evalVids/30fps.MP4')
     fps = int(round(cap.get(cv2.CAP_PROP_FPS),0))
     ret, frame = cap.read()
     fiftyFrame = []
@@ -25,6 +25,7 @@ if __name__ == '__main__':
     tracking = Tracking(fps=fps)
     model = YOLO("best.pt")
     grabberXArray = []
+    fiftyFrameRoi = []
     # ---VARIABLES---#
     while cap.isOpened():
         frameCount += 1
@@ -46,16 +47,22 @@ if __name__ == '__main__':
                     check = False
                     print("leftbbox: ", leftbbox)
                     print("rightbbox: ", rightbbox)
+                    print("region", region)
                 leftRegion = frame[region[1]:region[3], region[0]:region[2]]
-                cv2.imshow("region", leftRegion)
-                # cv2.rectangle(frame, (int(leftbbox[0]), int(leftbbox[1])),(int(leftbbox[2]),int(leftbbox[3])),(0,255,0), thickness=2)
-                # cv2.imshow("grabber", frame)
+                leftRoi = frame[rightbbox[1]:rightbbox[3], rightbbox[0]:rightbbox[2]]
+                #cv2.rectangle(frame, (int(rightbbox[0]), int(rightbbox[1])),(int(rightbbox[2]),int(rightbbox[3])),(0,0,255), thickness=2)
+                #cv2.imshow("grabber", frame)
+                #cv2.waitKey(0)
                 grabberX, getFrame = tracking.trackGrabber(leftRegion, leftbbox[2])
                 grabberXArray.append(grabberX)
                 if len(grabberXArray) > (fps * 7):
                     grabberXArray.pop(0)
                 if getFrame and len(grabberXArray) >= (fps*7 - 1):
-                    we.get_waste_frame(fiftyFrame,model=model,leftbbox=leftbbox, rightbbox=rightbbox, grabberXArray=grabberXArray, grabberStartX=leftbbox[2])
+                    for i in range(0,len(fiftyFrame)):
+                        fiftyFrameRoi.append(fiftyFrame[i][0:leftbbox[3] - 80,0:fiftyFrame[1].shape[1]])
+
+                    we.get_waste_frame(fiftyFrameRoi,model=model,leftbbox=leftbbox, rightbbox=rightbbox, grabberXArray=grabberXArray, grabberStartX=leftbbox[2])
+                    fiftyFrameRoi = []
 
                 # shows some images
                 #cv2.imshow('hsvtreshRight', flowThreshRight)
